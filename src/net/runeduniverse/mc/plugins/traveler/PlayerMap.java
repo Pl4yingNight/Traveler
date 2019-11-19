@@ -1,4 +1,4 @@
-package net.alphadragon.plugins.traveler;
+package net.runeduniverse.mc.plugins.traveler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,6 +23,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 import net.md_5.bungee.api.ChatColor;
+import net.runeduniverse.mc.plugins.traveler.model.LocationToken;
 
 public class PlayerMap {
 	
@@ -85,7 +86,7 @@ public class PlayerMap {
 		inv.clear();
 		
 		for (Long vpid : visitedPlaces) {
-			MapEntry entry = Options.getOptions().getMapEntry(vpid);
+			LocationToken entry = Options.getOptions().getMapEntry(vpid);
 			if(entry == null) {
 				visitedPlaces.remove(vpid);
 				continue;

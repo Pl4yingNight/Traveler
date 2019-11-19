@@ -1,4 +1,4 @@
-package net.alphadragon.plugins.traveler;
+package net.runeduniverse.mc.plugins.traveler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +15,8 @@ import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 
-import net.alphadragon.plugins.traveler.commands.TravelerCommandExecutor;
-import net.alphadragon.plugins.traveler.listener.ActionListener;
+import net.runeduniverse.mc.plugins.traveler.commands.TravelerCommandExecutor;
+import net.runeduniverse.mc.plugins.traveler.listener.ActionListener;
 
 @Plugin(name = "Traveler", version = "0.0.1")
 @Description(value = "This Plugin makes fast traveling possible")
@@ -25,12 +25,10 @@ import net.alphadragon.plugins.traveler.listener.ActionListener;
 public class Main extends JavaPlugin{
 	
 	private static Main plugin;
-	private Map<UUID, PlayerMap> data = new HashMap<UUID, PlayerMap>();
 	
 	@Override
 	public void onLoad() {
 		plugin = this;
-		Options.load();
 		
 		getLogger().info("Loaded");
 	}
@@ -40,19 +38,13 @@ public class Main extends JavaPlugin{
 		
 		new ActionListener(this);
 		
-		getCommand("get_traveler").setExecutor(new TravelerCommandExecutor());
-		
-		getServer().addRecipe(getTravelerEggRecipe());
+		//getServer().addRecipe(getTravelerEggRecipe());
 		
 		getLogger().info("Enabled");
 	}
 	
 	@Override
 	public void onDisable() {
-		for (UUID uuid : data.keySet()) {
-			data.get(uuid).save();
-		}
-		Options.save();
 		
 		getLogger().info("Disabled");
 	}
@@ -75,18 +67,11 @@ public class Main extends JavaPlugin{
 		data.remove(uuid);
 	}
 	
-	public static org.bukkit.inventory.ShapedRecipe getTravelerEggRecipe(){
+	/*public static org.bukkit.inventory.ShapedRecipe getTravelerEggRecipe(){
 		org.bukkit.inventory.ShapedRecipe item = new org.bukkit.inventory.ShapedRecipe(new NamespacedKey(plugin, "traveler_egg"), getTravelerEgg());
 		item.shape("MMM","MEM","MMM");   //X = nix
 		item.setIngredient('M', Material.PHANTOM_MEMBRANE);
 		item.setIngredient('E', Material.EMERALD_BLOCK);
 		return(item);
-	}
-	public static ItemStack getTravelerEgg(){
-		ItemStack stack = new ItemStack(Material.WANDERING_TRADER_SPAWN_EGG);
-		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName("[LOCATION NAME]");
-		stack.setItemMeta(meta);
-		return stack;
-	}
+	}*/
 }

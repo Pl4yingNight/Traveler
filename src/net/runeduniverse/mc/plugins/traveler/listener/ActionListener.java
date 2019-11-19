@@ -1,4 +1,4 @@
-package net.alphadragon.plugins.traveler.listener;
+package net.runeduniverse.mc.plugins.traveler.listener;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,11 +17,9 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.MetadataValueAdapter;
 import org.bukkit.persistence.PersistentDataType;
 
-import net.alphadragon.plugins.traveler.Main;
-import net.alphadragon.plugins.traveler.MapEntry;
-import net.alphadragon.plugins.traveler.Options;
-import net.alphadragon.plugins.traveler.PlayerMap;
 import net.md_5.bungee.api.ChatColor;
+import net.runeduniverse.mc.plugins.traveler.Main;
+import net.runeduniverse.mc.plugins.traveler.PlayerMap;
 
 public class ActionListener implements Listener {
 
@@ -76,7 +74,7 @@ public class ActionListener implements Listener {
 				if(!event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(id, PersistentDataType.LONG))
 					return;
 				
-				MapEntry entry = Options.getOptions().getMapEntry(event.getCurrentItem().getItemMeta().getPersistentDataContainer().get(id, PersistentDataType.LONG));
+				LocationToken entry = Options.getOptions().getMapEntry(event.getCurrentItem().getItemMeta().getPersistentDataContainer().get(id, PersistentDataType.LONG));
 				Location loc = event.getWhoClicked().getLocation();
 				loc.setWorld(plugin.getServer().getWorld(entry.getWorld()));
 				loc.setX(entry.getX());
@@ -103,7 +101,7 @@ public class ActionListener implements Listener {
     	Entity entity = event.getEntity();
     	Location location = entity.getLocation();
     	
-    	MapEntry entry = new MapEntry().setName(entity.getCustomName()).setWorld(location.getWorld().getName()).setX(location.getX()).setY(location.getY()).setZ(location.getZ());
+    	LocationToken entry = new LocationToken().setName(entity.getCustomName()).setWorld(location.getWorld().getName()).setX(location.getX()).setY(location.getY()).setZ(location.getZ());
     	Options.getOptions().addMapEntry(entry);
     	entity.setCustomName(ChatColor.DARK_GREEN+"[TRAVELER] "+entity.getCustomName());
     	entity.getPersistentDataContainer().set(new NamespacedKey(plugin, "id"), PersistentDataType.LONG, entry.getID());
