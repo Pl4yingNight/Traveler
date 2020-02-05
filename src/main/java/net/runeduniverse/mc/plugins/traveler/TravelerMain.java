@@ -23,6 +23,7 @@ import net.runeduniverse.mc.plugins.traveler.listener.ActionListener;
 public class TravelerMain extends JavaPlugin{
 	
 	private Snowflake snowflake = null;
+	private TravelManager travelManager = null;
 	public static Session travelerSession = null;
 	
 	@Override
@@ -34,8 +35,6 @@ public class TravelerMain extends JavaPlugin{
 			e.printStackTrace();
 		}
 		
-		travelerSession = snowflake.getDataManager().openNeo4jSession();
-		
 		snowflake.getDataManager().registerNodePackage("net.runeduniverse.mc.plugins.traveler.model");
 		snowflake.getDataManager().registerPlayerData(AdventurerData.class);
 		
@@ -45,7 +44,9 @@ public class TravelerMain extends JavaPlugin{
 	
 	@Override
 	public void onEnable() {
+		travelerSession = snowflake.getDataManager().openNeo4jSession();
 		
+		this.travelManager = new TravelManager();
 		new ActionListener(this);
 		
 		getLogger().info("Enabled");

@@ -39,7 +39,7 @@
 		<dependency>
 			<groupId>net.runeduniverse.mc.plugins</groupId>
 			<artifactId>snowflake-api</artifactId>
-			<version>1.14-1.0.4</version>
+			<version>1.14-1.0.5</version>
 			<scope>compile</scope>
 		</dependency>
 		<!--Spigot Annotation Processor -->

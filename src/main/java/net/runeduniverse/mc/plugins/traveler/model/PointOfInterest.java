@@ -14,4 +14,28 @@ public class PointOfInterest extends ANodeEntity {
 	@Convert(EnumStringConverter.class)
 	private POIType type = POIType.NORMAL;
 	private Location location;
+	
+	// GETTER
+	
+	public Boolean isPublic() {
+		return isPublic;
+	}
+	public Location getLocation() {
+		return location;
+	}
+	public POIType getType() {
+		return this.type;
+	}
+	
+	// SETTER
+	
+	public void setPublic(Boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+	public void setType(POIType type) {
+		this.type = type;
+	}
 }
