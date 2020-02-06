@@ -10,14 +10,22 @@ import net.runeduniverse.mc.plugins.snowflake.api.data.model.AShadowPlayerExtens
 
 @NodeEntity
 public class Adventurer extends AShadowPlayerExtension {
+	public static final String LAST_KNOWN_POINT_OF_INTEREST_RELATION = "LAST_KNOWN_POI";
 	public static final String HAS_VISITED_RELATION = "HAS_VISITED";
 
+	@Relationship(type = LAST_KNOWN_POINT_OF_INTEREST_RELATION, direction = Relationship.OUTGOING)
 	private PointOfInterest lastKnownPOI = null;
 
+	@Relationship(type = HAS_VISITED_RELATION, direction = Relationship.OUTGOING)
+	public List<Traveler> travelers = new ArrayList<>();
+	
 	// GETTER
 
 	public PointOfInterest getLastKnownPOI() {
 		return lastKnownPOI;
+	}
+	public List<Traveler> getTravelers(){
+		return this.travelers;
 	}
 
 	// SETTER
@@ -25,8 +33,10 @@ public class Adventurer extends AShadowPlayerExtension {
 	public void setLastKnownPOI(PointOfInterest lastKnownPOI) {
 		this.lastKnownPOI = lastKnownPOI;
 	}
+	public void addTraveler(Traveler traveler) {
+		this.travelers.add(traveler);
+	}
 
-	@Relationship(type = HAS_VISITED_RELATION, direction = Relationship.OUTGOING)
-	public List<Traveler> visitedTravelers = new ArrayList<>();
+	
 
 }

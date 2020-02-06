@@ -1,5 +1,6 @@
 package net.runeduniverse.mc.plugins.traveler;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.dependency.Dependency;
 import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
@@ -46,23 +47,17 @@ public class TravelerMain extends JavaPlugin{
 	public void onEnable() {
 		travelerSession = snowflake.getDataManager().openNeo4jSession();
 		
-		this.travelManager = new TravelManager();
+		this.travelManager = new TravelManager(this);
 		new ActionListener(this);
+		
+		Bukkit.addRecipe(ItemHub.getLocationTokenRecipe());
 		
 		getLogger().info("Enabled");
 	}
 	
 	@Override
 	public void onDisable() {
-		
+		this.travelManager.disable();
 		getLogger().info("Disabled");
 	}
-	
-	/*public static org.bukkit.inventory.ShapedRecipe getTravelerEggRecipe(){
-		org.bukkit.inventory.ShapedRecipe item = new org.bukkit.inventory.ShapedRecipe(new NamespacedKey(plugin, "traveler_egg"), getTravelerEgg());
-		item.shape("MMM","MEM","MMM");   //X = nix
-		item.setIngredient('M', Material.PHANTOM_MEMBRANE);
-		item.setIngredient('E', Material.EMERALD_BLOCK);
-		return(item);
-	}*/
 }
