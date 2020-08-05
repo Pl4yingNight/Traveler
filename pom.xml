@@ -39,14 +39,20 @@
 		<dependency>
 			<groupId>net.runeduniverse.mc.plugins</groupId>
 			<artifactId>snowflake-api</artifactId>
-			<version>1.14-1.0.5</version>
-			<scope>compile</scope>
+			<version>1.14-1.0.6</version>
+			<scope>provided</scope>
 		</dependency>
 		<!--Spigot Annotation Processor -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>plugin-annotations</artifactId>
 			<version>1.2.2-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.12</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
@@ -75,6 +81,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<phase>package</phase>

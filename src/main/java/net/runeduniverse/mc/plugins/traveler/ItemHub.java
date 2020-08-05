@@ -46,7 +46,7 @@ public class ItemHub {
 					poi = TravelerMain.travelerSession.load(PointOfInterest.class, poiID, 2);
 				// fill poi with features
 				TravelerMain.travelerSession.save(poi);
-				meta.getPersistentDataContainer().set(LOCATION_TOKEN_NBT_POI, PersistentDataType.LONG, TravelerMain.travelerSession.resolveGraphIdFor(poi));
+				meta.getPersistentDataContainer().set(LOCATION_TOKEN_NBT_POI, PersistentDataType.LONG, poi.getId());
 			}
 		});
 	}

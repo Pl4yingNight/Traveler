@@ -8,8 +8,8 @@ import org.bukkit.plugin.java.annotation.plugin.ApiVersion.Target;
 import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
-import org.neo4j.ogm.session.Session;
 
+import net.runeduniverse.libs.rogm.Session;
 import net.runeduniverse.mc.plugins.snowflake.api.Snowflake;
 import net.runeduniverse.mc.plugins.snowflake.api.exceptions.SnowflakeInconsistentException;
 import net.runeduniverse.mc.plugins.snowflake.api.exceptions.SnowflakeNotFoundException;
@@ -45,7 +45,7 @@ public class TravelerMain extends JavaPlugin{
 	
 	@Override
 	public void onEnable() {
-		travelerSession = snowflake.getDataManager().openNeo4jSession();
+		travelerSession = snowflake.getDataManager().getNeo4jSession();
 		
 		this.travelManager = new TravelManager(this);
 		new ActionListener(this);
