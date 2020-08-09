@@ -14,7 +14,7 @@ import net.runeduniverse.mc.plugins.traveler.model.Traveler;
 public class AdventurerData extends PlayerDataWrapper {
 
 	private static final String LAST_SEEN_TRAVELER_KEY = "lastSeenTraveler";
-	
+
 	private Adventurer adventurer = null;
 	private IDataAccess dataAccess = null;
 
@@ -27,7 +27,7 @@ public class AdventurerData extends PlayerDataWrapper {
 	@Override
 	public IPlayerData wrap(IPlayerData data) {
 		super.wrap(data);
-		this.adventurer = Adventurer.load(getDataManager().getNeo4jSession(), Adventurer.class, getUUID(), 4);
+		this.adventurer = loadExtension(Adventurer.class, 4);
 		if (this.adventurer == null)
 			this.adventurer = new Adventurer();
 		return this;
