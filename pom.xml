@@ -27,19 +27,12 @@
 		</repository>
 	</repositories>
 	<dependencies>
-		<!--Spigot API -->
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.14.4-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
 		<!-- Snowflake API -->
 		<!-- Spigot API included -->
 		<dependency>
 			<groupId>net.runeduniverse.mc.plugins</groupId>
 			<artifactId>snowflake-api</artifactId>
-			<version>1.14-1.0.6</version>
+			<version>1.14-1.2.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<!--Spigot Annotation Processor -->

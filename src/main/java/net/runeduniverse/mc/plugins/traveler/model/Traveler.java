@@ -6,7 +6,7 @@ import net.runeduniverse.libs.rogm.annotations.Direction;
 import net.runeduniverse.libs.rogm.annotations.NodeEntity;
 import net.runeduniverse.libs.rogm.annotations.Relationship;
 import net.runeduniverse.mc.plugins.snowflake.api.data.model.ANodeEntity;
-import net.runeduniverse.mc.plugins.snowflake.api.data.model.storage.Location;
+import net.runeduniverse.mc.plugins.snowflake.api.data.model.Location;
 
 @NodeEntity
 @Getter
