@@ -1,4 +1,4 @@
-package net.runeduniverse.mc.plugins.traveler.model;
+package net.runeduniverse.mc.plugins.traveler.data.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class Adventurer extends AShadowPlayerExtension {
 	private Traveler last = null;
 
 	@Relationship(label = HAS_VISITED_RELATION, direction = Direction.OUTGOING)
-	public List<Traveler> travelers = new ArrayList<>();
+	private List<Traveler> travelers = new ArrayList<>();
 
 	// SETTER
 	public void addTraveler(Traveler traveler) {

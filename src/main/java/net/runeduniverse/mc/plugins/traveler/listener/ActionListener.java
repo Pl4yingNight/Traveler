@@ -11,5 +11,4 @@ public class ActionListener implements Listener {
 		this.plugin = plugin;
 		plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
 	}
-
 }

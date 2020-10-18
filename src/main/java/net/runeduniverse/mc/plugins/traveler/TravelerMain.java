@@ -13,6 +13,7 @@ import net.runeduniverse.mc.plugins.snowflake.api.exceptions.InconsistentExcepti
 import net.runeduniverse.mc.plugins.snowflake.api.exceptions.SnowflakeNotFoundException;
 import net.runeduniverse.mc.plugins.traveler.data.AdventurerData;
 import net.runeduniverse.mc.plugins.traveler.listener.ActionListener;
+import net.runeduniverse.mc.plugins.traveler.services.AdventureService;
 
 @Plugin(name = "Traveler", version = "1.0.1")
 @Description(value = "This Plugin makes fast traveling possible")
@@ -22,7 +23,7 @@ import net.runeduniverse.mc.plugins.traveler.listener.ActionListener;
 public class TravelerMain extends JavaPlugin{
 	
 	private Snowflake snowflake = null;
-	private TravelManager travelManager = null;
+	private AdventureService adventureService = null;
 	
 	@Override
 	public void onLoad() {
@@ -32,9 +33,10 @@ public class TravelerMain extends JavaPlugin{
 			e.printStackTrace();
 		}
 		
-		
-		snowflake.registerNodePackage("net.runeduniverse.mc.plugins.traveler.model");
+		snowflake.registerNodePackage("net.runeduniverse.mc.plugins.traveler.data.model");
 		snowflake.registerPlayerData(AdventurerData.class);
+		
+		this.adventureService=new AdventureService(this.snowflake, this);
 		
 		
 		getLogger().info("Loaded");
@@ -42,17 +44,16 @@ public class TravelerMain extends JavaPlugin{
 	
 	@Override
 	public void onEnable() {
-		this.travelManager = new TravelManager(this);
 		new ActionListener(this);
+		this.adventureService.prepare();
 		
-		snowflake.getRecipeService().registerRecipe(ItemHub.LOCATION_TOKEN, ItemHub.getLocationTokenRecipe());
+		//snowflake.getRecipeService().registerRecipe(ItemHub.LOCATION_TOKEN, ItemHub.getLocationTokenRecipe());
 		
 		getLogger().info("Enabled");
 	}
 	
 	@Override
 	public void onDisable() {
-		this.travelManager.disable();
 		getLogger().info("Disabled");
 	}
 }
