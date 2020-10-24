@@ -1,6 +1,7 @@
 package net.runeduniverse.mc.plugins.traveler.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import lombok.Getter;
@@ -22,6 +24,17 @@ import net.runeduniverse.mc.plugins.traveler.data.model.Traveler;
 public class TravelerService implements IService {
 
 	public static TravelerService INSTANCE;
+
+	@SuppressWarnings("deprecation")
+	private static final NamespacedKey TOKEN_KEY = new NamespacedKey("traveler", "travel_token");
+	private static final ItemStack TOKEN = new ItemStack(Material.FILLED_MAP);
+
+	static {
+		ItemMeta meta = TOKEN.getItemMeta();
+		meta.setDisplayName("TRAVELER TOKEN");
+		meta.setLore(Arrays.asList("To travel, open your RECIPE BOOK", "and search for the desired location!",
+				"Clicking will send you there!"));
+	}
 
 	@Getter
 	private Snowflake snowflake;
@@ -38,6 +51,11 @@ public class TravelerService implements IService {
 
 	@Override
 	public void prepare() {
+		this.snowflake.getRecipeService().registerItemStack(TOKEN_KEY, TOKEN);
+	}
+
+	public void inject(INeo4jModule module) {
+		this.neo4jModule = module;
 	}
 
 	public Traveler loadTraveler(Long id) {
@@ -52,7 +70,7 @@ public class TravelerService implements IService {
 		if (this.loadedTraveler.containsKey(traveler))
 			return;
 		NamespacedKey key = new NamespacedKey(this.main, "loc:" + traveler.getId());
-		Bukkit.addRecipe(new ShapelessRecipe(key, genMap(traveler.getName())));
+		Bukkit.addRecipe(genMapRecipe(key, traveler));
 		this.loadedTraveler.put(traveler, key);
 	}
 
@@ -60,12 +78,15 @@ public class TravelerService implements IService {
 		this.loadedTraveler.remove(traveler);
 	}
 
-	private static ItemStack genMap(String name) {
+	@SuppressWarnings("deprecation")
+	private static ShapelessRecipe genMapRecipe(NamespacedKey key, Traveler traveler) {
 		ItemStack stack = new ItemStack(Material.FILLED_MAP);
 		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName(name);
+		meta.setDisplayName(traveler.getName());
 		stack.setItemMeta(meta);
-		return stack;
+		ShapelessRecipe recipe = new ShapelessRecipe(key, stack);
+		recipe.addIngredient(new RecipeChoice.ExactChoice(TOKEN));
+		return recipe;
 	}
 
 	public void buildGui(AdventurerData data) {

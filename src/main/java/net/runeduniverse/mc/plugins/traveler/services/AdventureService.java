@@ -30,6 +30,10 @@ public class AdventureService implements IService {
 	public void prepare() {
 	}
 
+	public void inject(INeo4jModule module) {
+		this.neo4jModule = module;
+	}
+
 	public AdventurerData getAdventurerData(UUID uuid) {
 		return this.loadedAdventurerData.get(uuid);
 	}
