@@ -8,11 +8,15 @@ import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
 import org.bukkit.plugin.java.annotation.plugin.author.Author;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+
 import net.runeduniverse.mc.plugins.snowflake.api.Snowflake;
 import net.runeduniverse.mc.plugins.snowflake.api.exceptions.InconsistentException;
 import net.runeduniverse.mc.plugins.snowflake.api.exceptions.SnowflakeNotFoundException;
 import net.runeduniverse.mc.plugins.traveler.data.AdventurerData;
 import net.runeduniverse.mc.plugins.traveler.listener.ActionListener;
+import net.runeduniverse.mc.plugins.traveler.listener.RequestTravelPacketListener;
 import net.runeduniverse.mc.plugins.traveler.services.AdventureService;
 import net.runeduniverse.mc.plugins.traveler.services.TravelerService;
 
@@ -20,19 +24,35 @@ import net.runeduniverse.mc.plugins.traveler.services.TravelerService;
 @Description(value = "This Plugin makes fast traveling possible")
 @Author(value = "Pl4yingNight")
 @Dependency("Snowflake")
+@Dependency("ProtocolLib")
 @ApiVersion(Target.v1_13)
 public class TravelerMain extends JavaPlugin {
 
 	private Snowflake snowflake = null;
+	private ProtocolManager protocolManager;
+
 	private AdventureService adventureService = null;
 	private TravelerService travelerService = null;
 
 	@Override
 	public void onLoad() {
+		boolean startable = true;
 		try {
 			this.snowflake = Snowflake.extract(this);
 		} catch (SnowflakeNotFoundException | InconsistentException e) {
 			e.printStackTrace();
+			startable = false;
+		}
+		try {
+			this.protocolManager = ProtocolLibrary.getProtocolManager();
+		} catch (Exception e) {
+			e.printStackTrace();
+			startable = false;
+		}
+		
+		if(!startable) {
+			this.getPluginLoader().disablePlugin(this);
+			this.getLogger().warning("Disabling due to missing dependencies! Please check the log for further information!");
 		}
 
 		snowflake.registerNodePackage("net.runeduniverse.mc.plugins.traveler.data.model");
@@ -50,6 +70,8 @@ public class TravelerMain extends JavaPlugin {
 		this.adventureService.inject(this.snowflake.getPlayerService().getNeo4jModule());
 
 		new ActionListener(this);
+		this.protocolManager.addPacketListener(new RequestTravelPacketListener(this));
+		
 		this.adventureService.prepare();
 		this.travelerService.prepare();
 

@@ -24,8 +24,8 @@ public class AdventurerData extends APlayerDataWrapper {
 
 	@Override
 	public void setDataAccess(IDataAccess dataAccess) {
-		this.dataAccess = dataAccess.getDataAccess("traveler");
 		super.setDataAccess(dataAccess);
+		this.dataAccess = dataAccess.getDataAccess("traveler");
 	}
 
 	@Override
@@ -41,8 +41,8 @@ public class AdventurerData extends APlayerDataWrapper {
 
 	@Override
 	public void save() {
-		this.session.save(this.adventurer, 6);
 		super.save();
+		this.session.save(this.adventurer, 6);
 	}
 
 	@Override

@@ -34,6 +34,7 @@ public class TravelerService implements IService {
 		meta.setDisplayName("TRAVELER TOKEN");
 		meta.setLore(Arrays.asList("To travel, open your RECIPE BOOK", "and search for the desired location!",
 				"Clicking will send you there!"));
+		TOKEN.setItemMeta(meta);
 	}
 
 	@Getter
