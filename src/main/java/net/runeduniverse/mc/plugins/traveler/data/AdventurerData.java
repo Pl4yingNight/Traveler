@@ -33,9 +33,6 @@ public class AdventurerData extends APlayerDataWrapper {
 		super.wrap(data);
 		this.service = data.getPlayerService();
 		this.session = this.service.getNeo4jModule().getSession();
-		this.adventurer = loadExtension(Adventurer.class, 4);
-		if (this.adventurer == null)
-			this.adventurer = new Adventurer();
 		return this;
 	}
 
@@ -50,13 +47,17 @@ public class AdventurerData extends APlayerDataWrapper {
 		super.sync();
 
 		RBucket<Long> r_lastseen = this.dataAccess.getBucket(LAST_SEEN_TRAVELER_KEY);
-		this.setLastSeen(this.session.load(Traveler.class, r_lastseen.get(), 3));
+		if (r_lastseen.isExists())
+			this.setLastSeen(this.session.load(Traveler.class, r_lastseen.get(), 3));
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void deepSync() {
 		super.deepSync();
+		this.adventurer = loadExtension(Adventurer.class, 4);
+		if (this.adventurer == null)
+			this.adventurer = new Adventurer();
 		AdventureService.INSTANCE.loadedAdventurerData.put(this.getUUID(), this);
 	}
 

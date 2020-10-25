@@ -24,6 +24,7 @@ public class AdventureService implements IService {
 	public AdventureService(Snowflake snowflake, TravelerMain main) {
 		this.snowflake = snowflake;
 		this.main = main;
+		INSTANCE = this;
 	}
 
 	@Override
