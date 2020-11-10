@@ -49,13 +49,14 @@ public class TravelerMain extends JavaPlugin {
 			e.printStackTrace();
 			startable = false;
 		}
-		
-		if(!startable) {
+
+		if (!startable) {
 			this.getPluginLoader().disablePlugin(this);
-			this.getLogger().warning("Disabling due to missing dependencies! Please check the log for further information!");
+			this.getLogger()
+					.warning("Disabling due to missing dependencies! Please check the log for further information!");
 		}
 
-		snowflake.registerNodePackage("net.runeduniverse.mc.plugins.traveler.data.model");
+		snowflake.registerNodePackages(this.getClassLoader(), "net.runeduniverse.mc.plugins.traveler.data.model");
 		snowflake.registerPlayerData(AdventurerData.class);
 
 		this.adventureService = new AdventureService(this.snowflake, this);
@@ -71,7 +72,7 @@ public class TravelerMain extends JavaPlugin {
 
 		new ActionListener(this);
 		this.protocolManager.addPacketListener(new RequestTravelPacketListener(this));
-		
+
 		this.adventureService.prepare();
 		this.travelerService.prepare();
 
