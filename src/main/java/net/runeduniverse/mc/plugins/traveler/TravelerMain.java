@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 
+import lombok.Getter;
 import net.runeduniverse.mc.plugins.snowflake.api.Snowflake;
 import net.runeduniverse.mc.plugins.snowflake.api.exceptions.InconsistentException;
 import net.runeduniverse.mc.plugins.snowflake.api.exceptions.SnowflakeNotFoundException;
@@ -31,7 +32,9 @@ public class TravelerMain extends JavaPlugin {
 	private Snowflake snowflake = null;
 	private ProtocolManager protocolManager;
 
+	@Getter
 	private AdventureService adventureService = null;
+	@Getter
 	private TravelerService travelerService = null;
 
 	@Override

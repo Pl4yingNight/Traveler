@@ -9,6 +9,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapelessRecipe;
@@ -98,5 +99,10 @@ public class TravelerService implements IService {
 				fakeRecipes.add(key);
 		}
 		data.showAltRecipes(fakeRecipes);
+	}
+
+	public void teleport(Player player, NamespacedKey travelerKey) {
+		this.main.getLogger().info(
+				"trying to teleport Player<" + player.getName() + "> to Traveler with key alias <" + travelerKey + ">");
 	}
 }
