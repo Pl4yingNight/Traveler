@@ -16,6 +16,7 @@ import net.runeduniverse.mc.plugins.snowflake.api.Snowflake;
 import net.runeduniverse.mc.plugins.snowflake.api.exceptions.InconsistentException;
 import net.runeduniverse.mc.plugins.snowflake.api.exceptions.SnowflakeNotFoundException;
 import net.runeduniverse.mc.plugins.traveler.data.AdventurerData;
+import net.runeduniverse.mc.plugins.traveler.data.items.Journal;
 import net.runeduniverse.mc.plugins.traveler.listener.ActionListener;
 import net.runeduniverse.mc.plugins.traveler.listener.RequestTravelPacketListener;
 import net.runeduniverse.mc.plugins.traveler.services.AdventureService;
@@ -72,12 +73,15 @@ public class TravelerMain extends JavaPlugin {
 	public void onEnable() {
 		this.travelerService.inject(this.snowflake.getStorageService().getNeo4jModule());
 		this.adventureService.inject(this.snowflake.getPlayerService().getNeo4jModule());
+		Journal.inject(this);
 
 		new ActionListener(this);
 		this.protocolManager.addPacketListener(new RequestTravelPacketListener(this));
 
 		this.adventureService.prepare();
 		this.travelerService.prepare();
+
+		this.snowflake.getRecipeService().registerRecipe(Journal.JOURNAL_RECIPE);
 
 		getLogger().info("Enabled");
 	}

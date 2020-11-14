@@ -20,14 +20,13 @@ import net.runeduniverse.mc.plugins.snowflake.api.services.IService;
 import net.runeduniverse.mc.plugins.snowflake.api.services.modules.INeo4jModule;
 import net.runeduniverse.mc.plugins.traveler.TravelerMain;
 import net.runeduniverse.mc.plugins.traveler.data.AdventurerData;
+import net.runeduniverse.mc.plugins.traveler.data.NamespacedKeys;
 import net.runeduniverse.mc.plugins.traveler.data.model.Traveler;
 
-public class TravelerService implements IService {
+public class TravelerService implements IService, NamespacedKeys {
 
 	public static TravelerService INSTANCE;
 
-	@SuppressWarnings("deprecation")
-	private static final NamespacedKey TOKEN_KEY = new NamespacedKey("traveler", "travel_token");
 	private static final ItemStack TOKEN = new ItemStack(Material.FILLED_MAP);
 
 	static {
@@ -43,7 +42,7 @@ public class TravelerService implements IService {
 	private TravelerMain main;
 
 	private INeo4jModule neo4jModule;
-	private Map<Traveler, NamespacedKey> loadedTraveler = new HashMap<>();
+	private Map<NamespacedKey, Traveler> keyedTraveler = new HashMap<>();
 
 	public TravelerService(Snowflake snowflake, TravelerMain main) {
 		this.snowflake = snowflake;
@@ -60,24 +59,49 @@ public class TravelerService implements IService {
 		this.neo4jModule = module;
 	}
 
-	public Traveler loadTraveler(Long id) {
-		Traveler traveler = this.neo4jModule.getSession().load(Traveler.class, id);
-		if (traveler == null)
-			return null;
+	public Traveler createTraveler() {
+		Traveler traveler = new Traveler();
+		this.neo4jModule.getSession().save(traveler);
 		this.registerTraveler(traveler);
 		return traveler;
 	}
 
+	public Traveler loadTraveler(Long id) {
+		return this.neo4jModule.getSession().load(Traveler.class, id);
+	}
+
+	public void saveTraveler(Traveler traveler) {
+		this.neo4jModule.getSession().save(traveler);
+	}
+
 	public void registerTraveler(Traveler traveler) {
-		if (this.loadedTraveler.containsKey(traveler))
+		if (this.keyedTraveler.containsValue(traveler))
 			return;
-		NamespacedKey key = new NamespacedKey(this.main, "loc:" + traveler.getId());
+		NamespacedKey key = traveler.getNamespacedKey();
 		Bukkit.addRecipe(genMapRecipe(key, traveler));
-		this.loadedTraveler.put(traveler, key);
+		this.keyedTraveler.put(key, traveler);
 	}
 
 	public void removeTraveler(Traveler traveler) {
-		this.loadedTraveler.remove(traveler);
+		this.keyedTraveler.remove(traveler.getNamespacedKey());
+	}
+
+	public void buildGui(AdventurerData data) {
+		List<NamespacedKey> fakeRecipes = new ArrayList<>();
+		for (Traveler t : data.getAdventurer().getTravelers()) {
+			if (this.keyedTraveler.containsValue(t))
+				fakeRecipes.add(t.getNamespacedKey());
+		}
+		data.showAltRecipes(fakeRecipes);
+	}
+
+	public void teleport(Player player, NamespacedKey travelerKey) {
+		this.main.getLogger().info(
+				"trying to teleport Player<" + player.getName() + "> to Traveler with key alias <" + travelerKey + ">");
+		Traveler traveler = this.keyedTraveler.get(travelerKey);
+		if (traveler == null)
+			player.sendMessage("The requested Traveler cant be found!");
+		this.snowflake.getPlayerService().getData(player).teleport(traveler.getLocation());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -89,20 +113,5 @@ public class TravelerService implements IService {
 		ShapelessRecipe recipe = new ShapelessRecipe(key, stack);
 		recipe.addIngredient(new RecipeChoice.ExactChoice(TOKEN));
 		return recipe;
-	}
-
-	public void buildGui(AdventurerData data) {
-		List<NamespacedKey> fakeRecipes = new ArrayList<>();
-		for (Traveler t : data.getAdventurer().getTravelers()) {
-			NamespacedKey key = this.loadedTraveler.get(t);
-			if (key != null)
-				fakeRecipes.add(key);
-		}
-		data.showAltRecipes(fakeRecipes);
-	}
-
-	public void teleport(Player player, NamespacedKey travelerKey) {
-		this.main.getLogger().info(
-				"trying to teleport Player<" + player.getName() + "> to Traveler with key alias <" + travelerKey + ">");
 	}
 }

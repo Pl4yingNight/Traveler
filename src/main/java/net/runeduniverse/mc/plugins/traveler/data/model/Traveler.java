@@ -1,5 +1,7 @@
 package net.runeduniverse.mc.plugins.traveler.data.model;
 
+import org.bukkit.NamespacedKey;
+
 import lombok.Getter;
 import lombok.Setter;
 import net.runeduniverse.libs.rogm.annotations.Direction;
@@ -15,30 +17,35 @@ import net.runeduniverse.mc.plugins.traveler.services.TravelerService;
 @NodeEntity
 @Getter
 @Setter
-public class Traveler extends ANodeEntity{
+public class Traveler extends ANodeEntity {
 
 	public static final String LOCATION_RELATION = "LOCATION";
 	public static final String HOME_RELATION = "HOME";
-	
+
 	@Property
 	private String name;
-	
+
 	@Relationship(label = LOCATION_RELATION, direction = Direction.OUTGOING)
 	private Location location;
-	
+
 	@Relationship(label = HOME_RELATION, direction = Direction.OUTGOING)
 	private Location home;
-	
+
 	private boolean invulnerable;
 	private boolean canMove;
-	
+
 	@PostLoad
 	private void postLoad() {
 		TravelerService.INSTANCE.registerTraveler(this);
 	}
-	
+
 	@PreDelete
 	private void perDelete() {
 		TravelerService.INSTANCE.removeTraveler(this);
+	}
+
+	@SuppressWarnings("deprecation")
+	public NamespacedKey getNamespacedKey() {
+		return new NamespacedKey("traveler", "loc:" + this.id);
 	}
 }
