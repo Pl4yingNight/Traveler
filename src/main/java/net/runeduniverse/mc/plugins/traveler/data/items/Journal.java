@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -22,8 +23,8 @@ public class Journal implements NamespacedKeys {
 
 	static {
 		// CONFIGURE JOURNAL_RECIPE
-		ItemMeta meta = BLANK_JOURNAL.getItemMeta();
-		meta.setDisplayName("Journal");
+		BookMeta meta = (BookMeta) BLANK_JOURNAL.getItemMeta();
+		meta.setTitle("Journal");
 		meta.setLore(Arrays.asList("A Journal can be used to turn", "a Wandering Trader into a Traveler",
 				"and/or configure a Traveler"));
 		BLANK_JOURNAL.setItemMeta(meta);
