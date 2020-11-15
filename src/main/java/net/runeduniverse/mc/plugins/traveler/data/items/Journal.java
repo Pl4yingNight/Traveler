@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import net.runeduniverse.mc.plugins.snowflake.api.data.model.ItemData;
@@ -18,18 +17,38 @@ import net.runeduniverse.mc.plugins.traveler.services.TravelerService;
 
 public class Journal implements NamespacedKeys {
 
-	public static final ItemStack BLANK_JOURNAL = new ItemStack(Material.WRITTEN_BOOK);
-	public static final ShapedRecipe JOURNAL_RECIPE = new ShapedRecipe(JOURNAL_KEY, BLANK_JOURNAL);
+	public static final ItemStack BLANK_JOURNAL;
+	public static final ShapedRecipe JOURNAL_RECIPE;
 
 	static {
 		// CONFIGURE JOURNAL_RECIPE
+		BLANK_JOURNAL = new ItemStack(Material.WRITTEN_BOOK);
+
 		BookMeta meta = (BookMeta) BLANK_JOURNAL.getItemMeta();
 		meta.setTitle("Journal");
 		meta.setLore(Arrays.asList("A Journal can be used to turn", "a Wandering Trader into a Traveler",
 				"and/or configure a Traveler"));
 		BLANK_JOURNAL.setItemMeta(meta);
 
+		/*
+		 * BookMeta bookMeta = (BookMeta) BLANK_JOURNAL.getItemMeta();
+		 * 
+		 * // create a page BaseComponent[] page = new ComponentBuilder("Click me")
+		 * .event(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://spigotmc.org"))
+		 * .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new
+		 * ComponentBuilder("Go to the spigot website!").create())) .create();
+		 * 
+		 * // add the page to the meta bookMeta.spigot().addPage(page);
+		 * 
+		 * // set the title and author of this book
+		 * bookMeta.setTitle("Interactive Book"); bookMeta.setAuthor("gigosaurus");
+		 * 
+		 * // update the ItemStack with this new meta
+		 * BLANK_JOURNAL.setItemMeta(bookMeta);
+		 */
+
 		// CONFIGURE JOURNAL_RECIPE
+		JOURNAL_RECIPE = new ShapedRecipe(JOURNAL_KEY, BLANK_JOURNAL);
 		JOURNAL_RECIPE.shape("-L-", "FBI", "-M-");
 		JOURNAL_RECIPE.setIngredient('B', Material.BOOK);
 		JOURNAL_RECIPE.setIngredient('F', Material.FEATHER);
