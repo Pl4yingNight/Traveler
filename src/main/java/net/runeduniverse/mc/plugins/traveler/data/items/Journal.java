@@ -55,7 +55,7 @@ public class Journal implements NamespacedKeys {
 		JOURNAL_RECIPE.setIngredient('I', Material.INK_SAC);
 		JOURNAL_RECIPE.setIngredient('M', Material.MAP);
 		JOURNAL_RECIPE.setIngredient('L', Material.LANTERN);
-	}
+	} // 19 x char per line | 14 x lines per page
 
 	private static TravelerMain main;
 

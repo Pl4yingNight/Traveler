@@ -1,0 +1,58 @@
+// 19 x char per line | 14 x lines per page
+|-------------------|
+|
+| **Traveler Journal**
+|
+| Selected Traveler
+|  [Traveler Name]
+|
+|    Destination
+| [Destination Name]
+| [public/private]
+|
+|      Owner
+| [Player/Clan/Guild/ENV] -> Hover: show specific
+|
+| [Traveler Wiki] -> Click: opens Link to github wiki
+-
+|-------------------|
+|
+| **Traveler**
+|
+| Name
+|  [Traveler Name] -> Hover: show id -> Click: show $Anvil-Rename-Inv
+| Visibility [public/private] -> Click: toggle
+| Movement       [yes/no] -> Click: toggle
+| Invulnerable   [yes/no] -> Click: toggle
+| Home X/Y/Z -> Hover: show "Click to Change" -> Click: show $Chest-Selection-Inv
+|  [X]
+|  [Y]
+|  [Z]
+|
+|  [Change Owner] -> Hover: show command
+-
+|-------------------|
+|
+| **Destination**
+|
+| Name
+|  [Destination Name]
+|
+| Server
+|  [Node]
+| World
+|  [overworld/nether/end]
+| Location X/Y/Z -> Hover: show "Click to Change" -> Click: show $Chest-Selection-Inv
+|  [X]
+|  [Y]
+|  [Z]
+-
+
+$Anvil-Rename-Inv:
+Paper -> Name: old name
+Result -> Click: Rename Traveler/Destination
+
+$Chest-Selection-Inv:
+Door -> Name: Back to Book -> Click: Back to Book
+Compass -> Name: show Current Location
+Compass -> Name: SET TO HERE(x:~ y:~ z:~) -> Click: sets position to here
