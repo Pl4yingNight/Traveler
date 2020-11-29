@@ -36,7 +36,7 @@
 | **Destination**
 |
 | Name
-|  [Destination Name]
+|  [Destination Name] -> Click: show $Anvil-Rename-Inv
 |
 | Server
 |  [Node]
@@ -55,4 +55,4 @@ Result -> Click: Rename Traveler/Destination
 $Chest-Selection-Inv:
 Door -> Name: Back to Book -> Click: Back to Book
 Compass -> Name: show Current Location
-Compass -> Name: SET TO HERE(x:~ y:~ z:~) -> Click: sets position to here
+Map -> Name: SET TO HERE(x:~ y:~ z:~) -> Click: sets position to here

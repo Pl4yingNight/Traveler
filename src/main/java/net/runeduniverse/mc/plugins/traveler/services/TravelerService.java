@@ -15,6 +15,7 @@ import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.runeduniverse.mc.plugins.snowflake.api.Snowflake;
 import net.runeduniverse.mc.plugins.snowflake.api.services.IService;
 import net.runeduniverse.mc.plugins.snowflake.api.services.modules.INeo4jModule;
@@ -104,6 +105,10 @@ public class TravelerService implements IService, NamespacedKeys {
 		this.snowflake.getPlayerService().getData(player).teleport(traveler.getLocation());
 	}
 
+	public Info getInfo(Traveler traveler) {
+		return new Info(traveler);
+	}
+
 	@SuppressWarnings("deprecation")
 	private static ShapelessRecipe genMapRecipe(NamespacedKey key, Traveler traveler) {
 		ItemStack stack = new ItemStack(Material.FILLED_MAP);
@@ -113,5 +118,49 @@ public class TravelerService implements IService, NamespacedKeys {
 		ShapelessRecipe recipe = new ShapelessRecipe(key, stack);
 		recipe.addIngredient(new RecipeChoice.ExactChoice(TOKEN));
 		return recipe;
+	}
+
+	@RequiredArgsConstructor
+	public class Info {
+		private final Traveler traveler;
+
+		public String full() {
+			return "Traveler ID: " + this.traveler.getId();
+		}
+
+		public String name() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String destname() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String visibility() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String invulnerable() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String home() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String destination() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String owner() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 }
