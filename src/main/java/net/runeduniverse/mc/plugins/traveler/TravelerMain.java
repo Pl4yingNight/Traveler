@@ -15,6 +15,7 @@ import lombok.Getter;
 import net.runeduniverse.mc.plugins.snowflake.api.Snowflake;
 import net.runeduniverse.mc.plugins.snowflake.api.exceptions.InconsistentException;
 import net.runeduniverse.mc.plugins.snowflake.api.exceptions.SnowflakeNotFoundException;
+import net.runeduniverse.mc.plugins.traveler.commands.TravelerCommandExecutor;
 import net.runeduniverse.mc.plugins.traveler.data.AdventurerData;
 import net.runeduniverse.mc.plugins.traveler.data.items.Journal;
 import net.runeduniverse.mc.plugins.traveler.listener.ActionListener;
@@ -80,6 +81,9 @@ public class TravelerMain extends JavaPlugin {
 
 		this.adventureService.prepare();
 		this.travelerService.prepare();
+
+		this.getCommand("tnpc").setExecutor(new TravelerCommandExecutor(this.travelerService,
+				this.snowflake.getStorageService(), this.snowflake.getPlayerService()));
 
 		this.snowflake.getRecipeService().registerRecipe(Journal.JOURNAL_RECIPE);
 

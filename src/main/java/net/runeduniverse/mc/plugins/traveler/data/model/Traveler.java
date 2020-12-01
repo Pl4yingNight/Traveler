@@ -15,22 +15,25 @@ import net.runeduniverse.mc.plugins.snowflake.api.data.model.Location;
 import net.runeduniverse.mc.plugins.traveler.services.TravelerService;
 
 @NodeEntity
-@Getter
 @Setter
 public class Traveler extends ANodeEntity {
 
 	public static final String LOCATION_RELATION = "LOCATION";
 	public static final String HOME_RELATION = "HOME";
 
+	@Getter
 	@Property
 	private String name;
 
+	@Getter
 	@Relationship(label = LOCATION_RELATION, direction = Direction.OUTGOING)
 	private Location location;
 
+	@Getter
 	@Relationship(label = HOME_RELATION, direction = Direction.OUTGOING)
 	private Location home;
 
+	@Getter
 	private boolean invulnerable;
 	private boolean canMove;
 
@@ -47,5 +50,9 @@ public class Traveler extends ANodeEntity {
 	@SuppressWarnings("deprecation")
 	public NamespacedKey getNamespacedKey() {
 		return new NamespacedKey("traveler", "loc:" + this.id);
+	}
+
+	public boolean canMove() {
+		return this.canMove;
 	}
 }

@@ -17,6 +17,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runeduniverse.mc.plugins.snowflake.api.Snowflake;
+import net.runeduniverse.mc.plugins.snowflake.api.data.model.Location;
+import net.runeduniverse.mc.plugins.snowflake.api.data.model.World;
 import net.runeduniverse.mc.plugins.snowflake.api.services.IService;
 import net.runeduniverse.mc.plugins.snowflake.api.services.modules.INeo4jModule;
 import net.runeduniverse.mc.plugins.traveler.TravelerMain;
@@ -129,38 +131,37 @@ public class TravelerService implements IService, NamespacedKeys {
 		}
 
 		public String name() {
-			// TODO Auto-generated method stub
-			return null;
+			return "Traveler Name: ?";
 		}
 
 		public String destname() {
-			// TODO Auto-generated method stub
-			return null;
+			return "Traveler Destination Name: " + this.traveler.getId();
 		}
 
 		public String visibility() {
-			// TODO Auto-generated method stub
-			return null;
+			return "Traveler Visibility: ?";
 		}
 
 		public String invulnerable() {
-			// TODO Auto-generated method stub
-			return null;
+			return "Traveler ID: " + this.traveler.isInvulnerable();
 		}
 
 		public String home() {
-			// TODO Auto-generated method stub
-			return null;
+			Location loc = this.traveler.getHome();
+			World world = loc.getWorld();
+			return "Traveler Home: [" + world.getNode().getId() + '|' + world.getDimension() + "] X=" + loc.getX()
+					+ " Y=" + loc.getY() + " Z=" + loc.getZ();
 		}
 
 		public String destination() {
-			// TODO Auto-generated method stub
-			return null;
+			Location loc = this.traveler.getHome();
+			World world = loc.getWorld();
+			return "Traveler Destination: [" + world.getNode().getId() + '|' + world.getDimension() + "] X=" + loc.getX()
+					+ " Y=" + loc.getY() + " Z=" + loc.getZ();
 		}
 
 		public String owner() {
-			// TODO Auto-generated method stub
-			return null;
+			return "Traveler Owner: ?";
 		}
 	}
 }
