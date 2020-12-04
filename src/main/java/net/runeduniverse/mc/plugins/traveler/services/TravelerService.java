@@ -127,7 +127,8 @@ public class TravelerService implements IService, NamespacedKeys {
 		private final Traveler traveler;
 
 		public String full() {
-			return "Traveler ID: " + this.traveler.getId();
+			return String.join("\n", "=== Traveler Info ===", "ID: " + this.traveler.getId(), name(), invulnerable(),
+					home(), destname(), visibility(), destination(), owner());
 		}
 
 		public String name() {
@@ -135,7 +136,7 @@ public class TravelerService implements IService, NamespacedKeys {
 		}
 
 		public String destname() {
-			return "Traveler Destination Name: " + this.traveler.getId();
+			return "Traveler Destination Name: " + this.traveler.getName();
 		}
 
 		public String visibility() {
@@ -143,7 +144,7 @@ public class TravelerService implements IService, NamespacedKeys {
 		}
 
 		public String invulnerable() {
-			return "Traveler ID: " + this.traveler.isInvulnerable();
+			return "Traveler Invulnerable: " + this.traveler.isInvulnerable();
 		}
 
 		public String home() {
@@ -156,8 +157,8 @@ public class TravelerService implements IService, NamespacedKeys {
 		public String destination() {
 			Location loc = this.traveler.getHome();
 			World world = loc.getWorld();
-			return "Traveler Destination: [" + world.getNode().getId() + '|' + world.getDimension() + "] X=" + loc.getX()
-					+ " Y=" + loc.getY() + " Z=" + loc.getZ();
+			return "Traveler Destination: [" + world.getNode().getId() + '|' + world.getDimension() + "] X="
+					+ loc.getX() + " Y=" + loc.getY() + " Z=" + loc.getZ();
 		}
 
 		public String owner() {

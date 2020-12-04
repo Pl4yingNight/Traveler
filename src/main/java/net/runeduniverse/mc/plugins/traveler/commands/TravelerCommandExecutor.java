@@ -16,7 +16,7 @@ import net.runeduniverse.mc.plugins.traveler.data.model.Traveler;
 import net.runeduniverse.mc.plugins.traveler.services.TravelerService;
 import net.runeduniverse.mc.plugins.traveler.services.TravelerService.Info;
 
-@Commands(@Command(name = "TravelerManagementCommand", aliases = "tnpc", usage = "/tnpc <Traveler ID> <options>"))
+@Commands(@Command(name = "tnpc", usage = "/tnpc <Traveler ID> <options>"))
 @RequiredArgsConstructor
 public class TravelerCommandExecutor implements CommandExecutor {
 
@@ -29,18 +29,26 @@ public class TravelerCommandExecutor implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
+		System.out.println("command captured!");
+		System.out.println(sender);
+		System.out.println(command);
+		System.out.println(label);
+		System.out.println(String.join(", ", args));
 		if (label != "tnpc" || args.length < 1)
 			return false;
+		System.out.println("prim check");
 
 		Player player = null;
 		ShadowPlayer shadow = null;
 		if (sender instanceof Player) {
 			player = (Player) sender;
 			shadow = this.playerService.getData(player).getShadow();
+			System.out.println("is Player");
 		}
 
 		Traveler traveler = null;
 		if (player != null && player.isOp() && args[0] == "summon") {
+			System.out.println("summon");
 			traveler = this.travelerService.createTraveler();
 			Location loc = this.storageService.convert(player.getLocation());
 			traveler.setHome(loc);
