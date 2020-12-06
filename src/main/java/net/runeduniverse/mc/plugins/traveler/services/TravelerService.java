@@ -18,8 +18,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runeduniverse.mc.plugins.snowflake.api.Snowflake;
 import net.runeduniverse.mc.plugins.snowflake.api.data.model.Location;
-import net.runeduniverse.mc.plugins.snowflake.api.data.model.World;
 import net.runeduniverse.mc.plugins.snowflake.api.services.IService;
+import net.runeduniverse.mc.plugins.snowflake.api.services.IStorageService;
 import net.runeduniverse.mc.plugins.snowflake.api.services.modules.INeo4jModule;
 import net.runeduniverse.mc.plugins.traveler.TravelerMain;
 import net.runeduniverse.mc.plugins.traveler.data.AdventurerData;
@@ -44,6 +44,8 @@ public class TravelerService implements IService, NamespacedKeys {
 	private Snowflake snowflake;
 	private TravelerMain main;
 
+	private IStorageService storageService;
+
 	private INeo4jModule neo4jModule;
 	private Map<NamespacedKey, Traveler> keyedTraveler = new HashMap<>();
 
@@ -55,6 +57,7 @@ public class TravelerService implements IService, NamespacedKeys {
 
 	@Override
 	public void prepare() {
+		this.storageService = this.snowflake.getStorageService();
 		this.snowflake.getRecipeService().registerItemStack(TOKEN_KEY, TOKEN);
 	}
 
@@ -69,8 +72,28 @@ public class TravelerService implements IService, NamespacedKeys {
 		return traveler;
 	}
 
+	public Traveler createTraveler(Location location) {
+		Traveler traveler = new Traveler();
+		traveler.setHome(location);
+		traveler.setLocation(location);
+		this.neo4jModule.getSession().save(traveler);
+		this.registerTraveler(traveler);
+		return traveler;
+	}
+
+	public Traveler createTraveler(org.bukkit.Location location) {
+		Location loc = this.storageService.convert(location);
+		this.neo4jModule.getSession().save(loc);
+		return this.createTraveler(loc);
+	}
+
 	public Traveler loadTraveler(Long id) {
-		return this.neo4jModule.getSession().load(Traveler.class, id);
+		Traveler traveler = this.neo4jModule.getSession().load(Traveler.class, id);
+		if (traveler.getHome() != null && traveler.getHome().getWorld() == null)
+			this.neo4jModule.getSession().resolveLazyLoaded(traveler.getHome(), 2);
+		if (traveler.getLocation() != null && traveler.getLocation().getWorld() == null)
+			this.neo4jModule.getSession().resolveLazyLoaded(traveler.getLocation(), 2);
+		return traveler;
 	}
 
 	public void saveTraveler(Traveler traveler) {
@@ -132,37 +155,31 @@ public class TravelerService implements IService, NamespacedKeys {
 		}
 
 		public String name() {
-			return "Traveler Name: ?";
+			return "Name: ?";
 		}
 
 		public String destname() {
-			return "Traveler Destination Name: " + this.traveler.getName();
+			return "Destination Name: " + this.traveler.getName();
 		}
 
 		public String visibility() {
-			return "Traveler Visibility: ?";
+			return "Visibility: ?";
 		}
 
 		public String invulnerable() {
-			return "Traveler Invulnerable: " + this.traveler.isInvulnerable();
+			return "Invulnerable: " + this.traveler.isInvulnerable();
 		}
 
 		public String home() {
-			Location loc = this.traveler.getHome();
-			World world = loc.getWorld();
-			return "Traveler Home: [" + world.getNode().getId() + '|' + world.getDimension() + "] X=" + loc.getX()
-					+ " Y=" + loc.getY() + " Z=" + loc.getZ();
+			return "Home: " + this.traveler.getHome();
 		}
 
 		public String destination() {
-			Location loc = this.traveler.getHome();
-			World world = loc.getWorld();
-			return "Traveler Destination: [" + world.getNode().getId() + '|' + world.getDimension() + "] X="
-					+ loc.getX() + " Y=" + loc.getY() + " Z=" + loc.getZ();
+			return "Destination: " + this.traveler.getLocation();
 		}
 
 		public String owner() {
-			return "Traveler Owner: ?";
+			return "Owner: ?";
 		}
 	}
 }

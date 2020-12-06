@@ -31,7 +31,7 @@ public class RequestTravelPacketListener extends PacketAdapter {
 			super.onPacketReceiving(event);
 
 		MinecraftKey key = firstNotNull(event.getPacket().getMinecraftKeys().getValues());
-		if (key == null || !key.getFullKey().startsWith("traveler:loc:"))
+		if (key == null || !key.getFullKey().startsWith("traveler:loc-"))
 			return;
 
 		event.setCancelled(true);

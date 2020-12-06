@@ -49,7 +49,7 @@ public class Traveler extends ANodeEntity {
 
 	@SuppressWarnings("deprecation")
 	public NamespacedKey getNamespacedKey() {
-		return new NamespacedKey("traveler", "loc:" + this.id);
+		return new NamespacedKey("traveler", "loc-" + this.id);
 	}
 
 	public boolean canMove() {

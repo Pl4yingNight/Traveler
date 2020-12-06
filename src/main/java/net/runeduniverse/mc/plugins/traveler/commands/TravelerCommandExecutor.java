@@ -34,7 +34,7 @@ public class TravelerCommandExecutor implements CommandExecutor {
 		System.out.println(command);
 		System.out.println(label);
 		System.out.println(String.join(", ", args));
-		if (label != "tnpc" || args.length < 1)
+		if (!label.equals("tnpc") || args.length < 1)
 			return false;
 		System.out.println("prim check");
 
@@ -47,13 +47,9 @@ public class TravelerCommandExecutor implements CommandExecutor {
 		}
 
 		Traveler traveler = null;
-		if (player != null && player.isOp() && args[0] == "summon") {
+		if (player != null && player.isOp() && args[0].equals("summon")) {
 			System.out.println("summon");
-			traveler = this.travelerService.createTraveler();
-			Location loc = this.storageService.convert(player.getLocation());
-			traveler.setHome(loc);
-			traveler.setLocation(loc);
-			this.travelerService.saveTraveler(traveler);
+			traveler = this.travelerService.createTraveler(player.getLocation());
 			sender.sendMessage("Traveler summoned! ID: " + traveler.getId());
 			return true;
 		}
@@ -73,6 +69,14 @@ public class TravelerCommandExecutor implements CommandExecutor {
 			return true;
 		}
 
+		Info info = this.travelerService.getInfo(traveler);
+
+		if (args.length < 2) {
+			// tnpc <id> => shows info
+			sender.sendMessage(info.full());
+			return true;
+		}
+
 		if (player != null) {
 			if (!storageService.contains(traveler.getHome())) {
 				sender.sendMessage(error("Traveler is not on your server!"));
@@ -82,14 +86,6 @@ public class TravelerCommandExecutor implements CommandExecutor {
 				sender.sendMessage(error("You are out of range! (" + PLAYER_TO_TRAVELER_DISTANCE + " Blocks)"));
 				return true;
 			}
-		}
-
-		Info info = this.travelerService.getInfo(traveler);
-
-		if (args.length < 2) {
-			// tnpc <id> => shows info
-			sender.sendMessage(info.full());
-			return true;
 		}
 
 		switch (args[1]) {
