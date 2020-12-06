@@ -10,6 +10,7 @@ import net.runeduniverse.mc.plugins.snowflake.api.services.IService;
 import net.runeduniverse.mc.plugins.snowflake.api.services.modules.INeo4jModule;
 import net.runeduniverse.mc.plugins.traveler.TravelerMain;
 import net.runeduniverse.mc.plugins.traveler.data.AdventurerData;
+import net.runeduniverse.mc.plugins.traveler.data.model.Traveler;
 
 public class AdventureService implements IService {
 	public static AdventureService INSTANCE;
@@ -37,5 +38,9 @@ public class AdventureService implements IService {
 
 	public AdventurerData getAdventurerData(UUID uuid) {
 		return this.loadedAdventurerData.get(uuid);
+	}
+	
+	public void removeRecordsOf(Traveler traveler) {
+		// TODO remove records from all loaded Adventurers
 	}
 }

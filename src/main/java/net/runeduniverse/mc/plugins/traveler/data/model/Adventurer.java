@@ -1,7 +1,7 @@
 package net.runeduniverse.mc.plugins.traveler.data.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,13 +19,18 @@ public class Adventurer extends AShadowPlayerExtension {
 	private Traveler last = null;
 
 	@Relationship(label = HAS_VISITED_RELATION, direction = Direction.OUTGOING)
-	private List<Traveler> travelers = new ArrayList<>();
+	private Set<Traveler> travelers = new HashSet<>();
 
 	// SETTER
-	public void addTraveler(Traveler traveler) {
+	public boolean addTraveler(Traveler traveler) {
+		if (this.travelers.contains(traveler))
+			return false;
 		this.travelers.add(traveler);
+		return true;
 	}
 
-	
+	public void removeTraveler(Traveler traveler) {
+		this.travelers.remove(traveler);
+	}
 
 }

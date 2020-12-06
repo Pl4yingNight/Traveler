@@ -29,26 +29,18 @@ public class TravelerCommandExecutor implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-		System.out.println("command captured!");
-		System.out.println(sender);
-		System.out.println(command);
-		System.out.println(label);
-		System.out.println(String.join(", ", args));
 		if (!label.equals("tnpc") || args.length < 1)
 			return false;
-		System.out.println("prim check");
 
 		Player player = null;
 		ShadowPlayer shadow = null;
 		if (sender instanceof Player) {
 			player = (Player) sender;
 			shadow = this.playerService.getData(player).getShadow();
-			System.out.println("is Player");
 		}
 
 		Traveler traveler = null;
 		if (player != null && player.isOp() && args[0].equals("summon")) {
-			System.out.println("summon");
 			traveler = this.travelerService.createTraveler(player.getLocation());
 			sender.sendMessage("Traveler summoned! ID: " + traveler.getId());
 			return true;
@@ -104,7 +96,8 @@ public class TravelerCommandExecutor implements CommandExecutor {
 					return true;
 				}
 
-				// TODO set name args[3]
+				traveler.setName(toString(args, 3, args.length));
+				this.travelerService.saveTraveler(traveler);
 				return true;
 			}
 			break;
@@ -123,7 +116,7 @@ public class TravelerCommandExecutor implements CommandExecutor {
 					return true;
 				}
 
-				traveler.setName(args[3]);
+				traveler.setLocationName(toString(args, 3, args.length));
 				this.travelerService.saveTraveler(traveler);
 				return true;
 			}
@@ -159,7 +152,7 @@ public class TravelerCommandExecutor implements CommandExecutor {
 		// tnpc <id> movement set <yes/no>
 		case "movement":
 			if (args.length < 3) {
-				sender.sendMessage(info.visibility());
+				sender.sendMessage(info.movement());
 				return true;
 			}
 			switch (args[2]) {
@@ -231,9 +224,9 @@ public class TravelerCommandExecutor implements CommandExecutor {
 				traveler.getHome().copyTo(loc);
 
 				try {
-					loc.setX(parseCoordinate(player, args[3]));
-					loc.setY(parseCoordinate(player, args[4]));
-					loc.setZ(parseCoordinate(player, args[5]));
+					loc.setX(parseCoordinate(args[3], player.getLocation().getX()));
+					loc.setY(parseCoordinate(args[4], player.getLocation().getY()));
+					loc.setZ(parseCoordinate(args[5], player.getLocation().getZ()));
 				} catch (NumberFormatException e) {
 					sender.sendMessage(error("The value <" + args[0] + "> is not a valid number!"));
 					return true;
@@ -275,13 +268,12 @@ public class TravelerCommandExecutor implements CommandExecutor {
 					return true;
 				}
 
-				Location loc = new Location();
-				traveler.getLocation().copyTo(loc);
+				Location loc = traveler.getLocation().copyTo(new Location());
 
 				try {
-					loc.setX(parseCoordinate(player, args[3]));
-					loc.setY(parseCoordinate(player, args[4]));
-					loc.setZ(parseCoordinate(player, args[5]));
+					loc.setX(parseCoordinate(args[3], player.getLocation().getX()));
+					loc.setY(parseCoordinate(args[4], player.getLocation().getY()));
+					loc.setZ(parseCoordinate(args[5], player.getLocation().getZ()));
 				} catch (NumberFormatException e) {
 					sender.sendMessage(error("The value <" + args[0] + "> is not a valid number!"));
 					return true;
@@ -341,6 +333,13 @@ public class TravelerCommandExecutor implements CommandExecutor {
 				// TODO set owner to ENV
 				return true;
 			}
+			break;
+		case "delete":
+			if (sender.isOp()) {
+				this.travelerService.deleteTraveler(traveler);
+				sender.sendMessage("Traveler ID<" + traveler.getId() + "> successfully deleted!");
+				return true;
+			}
 		}
 		return false;
 
@@ -350,10 +349,18 @@ public class TravelerCommandExecutor implements CommandExecutor {
 		return ChatColor.RED + "[ERROR] " + ChatColor.RESET + msg;
 	}
 
-	private Double parseCoordinate(Player player, String c) throws NumberFormatException, NullPointerException {
+	private Double parseCoordinate(String c, Double d) throws NumberFormatException, NullPointerException {
 		if (c == "~")
-			return player.getLocation().getX();
+			return d;
 		return Double.parseDouble(c);
+	}
+
+	private static final String toString(String[] arr, int start, int end) {
+		String r = "";
+		for (int i = start; i < arr.length && i < end; i++) {
+			r = r + ' ' + arr[i];
+		}
+		return r.trim();
 	}
 
 }

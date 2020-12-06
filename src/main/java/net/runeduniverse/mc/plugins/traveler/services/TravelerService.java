@@ -9,6 +9,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
@@ -45,6 +46,7 @@ public class TravelerService implements IService, NamespacedKeys {
 	private TravelerMain main;
 
 	private IStorageService storageService;
+	private AdventureService adventureService;
 
 	private INeo4jModule neo4jModule;
 	private Map<NamespacedKey, Traveler> keyedTraveler = new HashMap<>();
@@ -58,6 +60,7 @@ public class TravelerService implements IService, NamespacedKeys {
 	@Override
 	public void prepare() {
 		this.storageService = this.snowflake.getStorageService();
+		this.adventureService = this.main.getAdventureService();
 		this.snowflake.getRecipeService().registerItemStack(TOKEN_KEY, TOKEN);
 	}
 
@@ -68,36 +71,34 @@ public class TravelerService implements IService, NamespacedKeys {
 	public Traveler createTraveler() {
 		Traveler traveler = new Traveler();
 		this.neo4jModule.getSession().save(traveler);
-		this.registerTraveler(traveler);
 		return traveler;
 	}
 
-	public Traveler createTraveler(Location location) {
+	public Traveler createTraveler(Location location) throws NullPointerException {
+		World world = location.getWorld().getWorld();
+		if (world == null)
+			throw new NullPointerException("requested World not loaded!");
 		Traveler traveler = new Traveler();
-		traveler.setHome(location);
-		traveler.setLocation(location);
-		this.neo4jModule.getSession().save(traveler);
+		System.out.println("loc: " + location.toString());
+		traveler.setHome(location.copyTo(new Location()));
+		traveler.setLocation(location.copyTo(new Location()));
+		this.saveTraveler(traveler);
+		traveler.summonEntity();
 		this.registerTraveler(traveler);
 		return traveler;
 	}
 
-	public Traveler createTraveler(org.bukkit.Location location) {
+	public Traveler createTraveler(org.bukkit.Location location) throws NullPointerException {
 		Location loc = this.storageService.convert(location);
-		this.neo4jModule.getSession().save(loc);
 		return this.createTraveler(loc);
 	}
 
 	public Traveler loadTraveler(Long id) {
-		Traveler traveler = this.neo4jModule.getSession().load(Traveler.class, id);
-		if (traveler.getHome() != null && traveler.getHome().getWorld() == null)
-			this.neo4jModule.getSession().resolveLazyLoaded(traveler.getHome(), 2);
-		if (traveler.getLocation() != null && traveler.getLocation().getWorld() == null)
-			this.neo4jModule.getSession().resolveLazyLoaded(traveler.getLocation(), 2);
-		return traveler;
+		return this.neo4jModule.getSession().load(Traveler.class, id, 4);
 	}
 
 	public void saveTraveler(Traveler traveler) {
-		this.neo4jModule.getSession().save(traveler);
+		this.neo4jModule.getSession().save(traveler, 2);
 	}
 
 	public void registerTraveler(Traveler traveler) {
@@ -110,6 +111,16 @@ public class TravelerService implements IService, NamespacedKeys {
 
 	public void removeTraveler(Traveler traveler) {
 		this.keyedTraveler.remove(traveler.getNamespacedKey());
+		this.neo4jModule.getSession().unload(traveler.getHome());
+		this.neo4jModule.getSession().unload(traveler.getLocation());
+	}
+
+	public void deleteTraveler(Traveler traveler) {
+		this.keyedTraveler.remove(traveler.getNamespacedKey());
+		this.neo4jModule.getSession().delete(traveler);
+		this.neo4jModule.getSession().delete(traveler.getHome());
+		this.neo4jModule.getSession().delete(traveler.getLocation());
+		this.adventureService.removeRecordsOf(traveler);
 	}
 
 	public void buildGui(AdventurerData data) {
@@ -150,36 +161,40 @@ public class TravelerService implements IService, NamespacedKeys {
 		private final Traveler traveler;
 
 		public String full() {
-			return String.join("\n", "=== Traveler Info ===", "ID: " + this.traveler.getId(), name(), invulnerable(),
-					home(), destname(), visibility(), destination(), owner());
+			return String.join("\n│ ", "┌─── Traveler Info ───", "ID: " + this.traveler.getId(), name(), invulnerable(),
+					home(), destname(), visibility(), movement(), destination(), owner());
 		}
 
 		public String name() {
-			return "Name: ?";
+			return "Name:             " + this.traveler.getName();
 		}
 
 		public String destname() {
-			return "Destination Name: " + this.traveler.getName();
+			return "Destination Name: " + this.traveler.getLocationName();
 		}
 
 		public String visibility() {
-			return "Visibility: ?";
+			return "Visibility:         ?";
+		}
+
+		public String movement() {
+			return "Movement:       " + (this.traveler.canMove() ? "yes" : "no");
 		}
 
 		public String invulnerable() {
-			return "Invulnerable: " + this.traveler.isInvulnerable();
+			return "Invulnerable:   " + (this.traveler.isInvulnerable() ? "yes" : "no");
 		}
 
 		public String home() {
-			return "Home: " + this.traveler.getHome();
+			return "Home:             " + this.traveler.getHome();
 		}
 
 		public String destination() {
-			return "Destination: " + this.traveler.getLocation();
+			return "Destination:     " + this.traveler.getLocation();
 		}
 
 		public String owner() {
-			return "Owner: ?";
+			return "Owner:           ?";
 		}
 	}
 }
