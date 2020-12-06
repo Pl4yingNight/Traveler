@@ -27,7 +27,7 @@ import net.runeduniverse.mc.plugins.traveler.data.AdventurerData;
 import net.runeduniverse.mc.plugins.traveler.data.NamespacedKeys;
 import net.runeduniverse.mc.plugins.traveler.data.model.Traveler;
 
-public class TravelerService implements IService, NamespacedKeys {
+public class TravelerService implements IService {
 
 	public static TravelerService INSTANCE;
 
@@ -61,7 +61,7 @@ public class TravelerService implements IService, NamespacedKeys {
 	public void prepare() {
 		this.storageService = this.snowflake.getStorageService();
 		this.adventureService = this.main.getAdventureService();
-		this.snowflake.getRecipeService().registerItemStack(TOKEN_KEY, TOKEN);
+		this.snowflake.getRecipeService().registerItemStack(NamespacedKeys.TOKEN_KEY, TOKEN);
 	}
 
 	public void inject(INeo4jModule module) {
@@ -130,6 +130,14 @@ public class TravelerService implements IService, NamespacedKeys {
 				fakeRecipes.add(t.getNamespacedKey());
 		}
 		data.showAltRecipes(fakeRecipes);
+
+		// TODO rm debug stuff
+
+		data.getPlayer().discoverRecipes(fakeRecipes);
+
+		for (NamespacedKey namespacedKey : fakeRecipes) {
+			System.out.println("show: " + namespacedKey);
+		}
 	}
 
 	public void teleport(Player player, NamespacedKey travelerKey) {

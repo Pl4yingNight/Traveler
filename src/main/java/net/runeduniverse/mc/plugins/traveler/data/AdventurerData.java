@@ -39,7 +39,7 @@ public class AdventurerData extends APlayerDataWrapper {
 	@Override
 	public void save() {
 		super.save();
-		this.session.save(this.adventurer, 6);
+		this.session.save(this.adventurer);
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.persistence.PersistentDataType;
 
 import net.runeduniverse.mc.plugins.traveler.TravelerMain;
@@ -46,12 +47,17 @@ public class ActionListener implements Listener, NamespacedKeys {
 				Traveler traveler = ActionListener.this.travelerService.loadTraveler(id);
 				AdventurerData data = ActionListener.this.adventureService
 						.getAdventurerData(event.getPlayer().getUniqueId());
+
+				String name = traveler.getLocationName();
 				if (data.getAdventurer().addTraveler(traveler))
-					event.getPlayer().sendMessage("Destination " + traveler.getLocationName() + " discovered!");
-				String name = traveler.getName();
-				if (name == null)
-					name = "[Traveler]";
-				event.getPlayer().openInventory(Bukkit.createInventory(null, InventoryType.WORKBENCH, name));
+					event.getPlayer().sendMessage("Destination " + (name == null ? "" : name + ' ') + "discovered!");
+				name = traveler.getName();
+
+				Inventory inv = Bukkit.createInventory(null, InventoryType.WORKBENCH,
+						(name == null ? "[Traveler]" : name));
+				//inv.setItem(0, TravelerService.TOKEN);
+				event.getPlayer().openInventory(inv);
+
 				ActionListener.this.travelerService.buildGui(data);
 			}
 		});
@@ -61,7 +67,7 @@ public class ActionListener implements Listener, NamespacedKeys {
 	@EventHandler
 	public void onInventoryCloseEvent(InventoryCloseEvent event) {
 		AdventurerData data = this.adventureService.getAdventurerData(event.getPlayer().getUniqueId());
-		if (data == null)
+		if (data == null || event.getInventory().getHolder() != null)
 			return;
 		data.resetRecipes();
 	}
