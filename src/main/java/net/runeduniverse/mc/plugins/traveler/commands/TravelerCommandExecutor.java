@@ -225,10 +225,26 @@ public class TravelerCommandExecutor implements CommandExecutor {
 
 				try {
 					loc.setX(parseCoordinate(args[3], player.getLocation().getX()));
+				} catch (NumberFormatException e) {
+					sender.sendMessage(error("The value <" + args[3] + "> is not a valid number!"));
+					return true;
+				} catch (NullPointerException e) {
+					sender.sendMessage(error("The <sender> must be a player to be able to use <~> as alias!"));
+					return true;
+				}
+				try {
 					loc.setY(parseCoordinate(args[4], player.getLocation().getY()));
+				} catch (NumberFormatException e) {
+					sender.sendMessage(error("The value <" + args[4] + "> is not a valid number!"));
+					return true;
+				} catch (NullPointerException e) {
+					sender.sendMessage(error("The <sender> must be a player to be able to use <~> as alias!"));
+					return true;
+				}
+				try {
 					loc.setZ(parseCoordinate(args[5], player.getLocation().getZ()));
 				} catch (NumberFormatException e) {
-					sender.sendMessage(error("The value <" + args[0] + "> is not a valid number!"));
+					sender.sendMessage(error("The value <" + args[5] + "> is not a valid number!"));
 					return true;
 				} catch (NullPointerException e) {
 					sender.sendMessage(error("The <sender> must be a player to be able to use <~> as alias!"));
@@ -272,18 +288,33 @@ public class TravelerCommandExecutor implements CommandExecutor {
 
 				try {
 					loc.setX(parseCoordinate(args[3], player.getLocation().getX()));
+				} catch (NumberFormatException e) {
+					sender.sendMessage(error("The value <" + args[3] + "> is not a valid number!"));
+					return true;
+				} catch (NullPointerException e) {
+					sender.sendMessage(error("The <sender> must be a player to be able to use <~> as alias!"));
+					return true;
+				}
+				try {
 					loc.setY(parseCoordinate(args[4], player.getLocation().getY()));
+				} catch (NumberFormatException e) {
+					sender.sendMessage(error("The value <" + args[4] + "> is not a valid number!"));
+					return true;
+				} catch (NullPointerException e) {
+					sender.sendMessage(error("The <sender> must be a player to be able to use <~> as alias!"));
+					return true;
+				}
+				try {
 					loc.setZ(parseCoordinate(args[5], player.getLocation().getZ()));
 				} catch (NumberFormatException e) {
-					sender.sendMessage(error("The value <" + args[0] + "> is not a valid number!"));
+					sender.sendMessage(error("The value <" + args[5] + "> is not a valid number!"));
 					return true;
 				} catch (NullPointerException e) {
 					sender.sendMessage(error("The <sender> must be a player to be able to use <~> as alias!"));
 					return true;
 				}
 
-				if (!loc.getWorld().getWorld().getWorldBorder().isInside(
-						new org.bukkit.Location(loc.getWorld().getWorld(), loc.getX(), loc.getY(), loc.getZ()))) {
+				if (!loc.getWorld().getWorld().getWorldBorder().isInside(loc.toBukkit())) {
 					sender.sendMessage(error("Location outside of the WorldBorder!"));
 					return true;
 				}
@@ -350,7 +381,7 @@ public class TravelerCommandExecutor implements CommandExecutor {
 	}
 
 	private Double parseCoordinate(String c, Double d) throws NumberFormatException, NullPointerException {
-		if (c == "~")
+		if (c.equals("~"))
 			return d;
 		return Double.parseDouble(c);
 	}

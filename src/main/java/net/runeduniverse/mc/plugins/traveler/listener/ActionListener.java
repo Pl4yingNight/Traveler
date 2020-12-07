@@ -11,7 +11,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.persistence.PersistentDataType;
 
 import net.runeduniverse.mc.plugins.traveler.TravelerMain;
@@ -53,11 +52,8 @@ public class ActionListener implements Listener, NamespacedKeys {
 					event.getPlayer().sendMessage("Destination " + (name == null ? "" : name + ' ') + "discovered!");
 				name = traveler.getName();
 
-				Inventory inv = Bukkit.createInventory(null, InventoryType.WORKBENCH,
-						(name == null ? "[Traveler]" : name));
-				//inv.setItem(0, TravelerService.TOKEN);
-				event.getPlayer().openInventory(inv);
-
+				event.getPlayer().openInventory(
+						Bukkit.createInventory(null, InventoryType.WORKBENCH, (name == null ? "[Traveler]" : name)));
 				ActionListener.this.travelerService.buildGui(data);
 			}
 		});

@@ -130,11 +130,9 @@ public class TravelerService implements IService {
 				fakeRecipes.add(t.getNamespacedKey());
 		}
 		data.showAltRecipes(fakeRecipes);
-
-		// TODO rm debug stuff
-
 		data.getPlayer().discoverRecipes(fakeRecipes);
 
+		// TODO rm debug stuff
 		for (NamespacedKey namespacedKey : fakeRecipes) {
 			System.out.println("show: " + namespacedKey);
 		}
@@ -157,7 +155,7 @@ public class TravelerService implements IService {
 	private static ShapelessRecipe genMapRecipe(NamespacedKey key, Traveler traveler) {
 		ItemStack stack = new ItemStack(Material.FILLED_MAP);
 		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName(traveler.getName());
+		meta.setDisplayName(traveler.getLocationName());
 		stack.setItemMeta(meta);
 		ShapelessRecipe recipe = new ShapelessRecipe(key, stack);
 		recipe.addIngredient(new RecipeChoice.ExactChoice(TOKEN));
