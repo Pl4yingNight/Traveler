@@ -10,6 +10,7 @@ import net.runeduniverse.mc.plugins.snowflake.api.services.IPlayerService;
 import net.runeduniverse.mc.plugins.traveler.data.model.Adventurer;
 import net.runeduniverse.mc.plugins.traveler.data.model.Traveler;
 import net.runeduniverse.mc.plugins.traveler.services.AdventureService;
+import net.runeduniverse.mc.plugins.traveler.services.TravelerService;
 import net.runeduniverse.mc.plugins.snowflake.api.data.player.APlayerDataWrapper;
 
 public class AdventurerData extends APlayerDataWrapper {
@@ -48,7 +49,7 @@ public class AdventurerData extends APlayerDataWrapper {
 
 		RBucket<Long> r_lastseen = this.dataAccess.getBucket(LAST_SEEN_TRAVELER_KEY);
 		if (r_lastseen.isExists())
-			this.setLastSeen(this.session.load(Traveler.class, r_lastseen.get(), 3));
+			this.setLastSeen(TravelerService.INSTANCE.loadTraveler(r_lastseen.get()));
 	}
 
 	@SuppressWarnings("deprecation")
