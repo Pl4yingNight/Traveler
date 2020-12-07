@@ -39,8 +39,9 @@ public class AdventureService implements IService {
 	public AdventurerData getAdventurerData(UUID uuid) {
 		return this.loadedAdventurerData.get(uuid);
 	}
-	
+
 	public void removeRecordsOf(Traveler traveler) {
-		// TODO remove records from all loaded Adventurers
+		for (AdventurerData data : this.loadedAdventurerData.values())
+			data.getAdventurer().removeTraveler(traveler);
 	}
 }

@@ -38,8 +38,8 @@ public class AdventurerData extends APlayerDataWrapper {
 	}
 
 	@Override
-	public void save() {
-		super.save();
+	public void deepSave() {
+		super.deepSave();
 		this.session.save(this.adventurer);
 	}
 
@@ -56,9 +56,10 @@ public class AdventurerData extends APlayerDataWrapper {
 	@Override
 	public void deepSync() {
 		super.deepSync();
+		this.getSnowflake().getLogger().info("AdventurerData.deepSync()");
 		this.adventurer = loadExtension(Adventurer.class, 4);
 		if (this.adventurer == null)
-			this.adventurer = new Adventurer();
+			this.adventurer = new Adventurer(this.getShadow());
 		AdventureService.INSTANCE.loadedAdventurerData.put(this.getUUID(), this);
 	}
 

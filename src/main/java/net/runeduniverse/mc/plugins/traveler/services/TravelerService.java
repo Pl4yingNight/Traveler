@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -102,10 +104,18 @@ public class TravelerService implements IService {
 	}
 
 	public void registerTraveler(Traveler traveler) {
-		if (this.keyedTraveler.containsValue(traveler))
-			return;
 		NamespacedKey key = traveler.getNamespacedKey();
-		Bukkit.addRecipe(genMapRecipe(key, traveler));
+		ShapelessRecipe recipe = genMapRecipe(key, traveler);
+		Future<?> task = this.snowflake.getServer().getScheduler().callSyncMethod(this.main, new Callable<Void>() {
+
+			@Override
+			public Void call() throws Exception {
+				Bukkit.addRecipe(recipe);
+				return null;
+			}
+		});
+		while (task.isDone())
+			;
 		this.keyedTraveler.put(key, traveler);
 	}
 
@@ -116,7 +126,9 @@ public class TravelerService implements IService {
 	}
 
 	public void deleteTraveler(Traveler traveler) {
-		this.keyedTraveler.remove(traveler.getNamespacedKey());
+		NamespacedKey key = traveler.getNamespacedKey();
+		this.keyedTraveler.remove(key);
+		this.snowflake.getRecipeService().removeRecipe(key);
 		this.neo4jModule.getSession().delete(traveler);
 		this.neo4jModule.getSession().delete(traveler.getHome());
 		this.neo4jModule.getSession().delete(traveler.getLocation());

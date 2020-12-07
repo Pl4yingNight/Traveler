@@ -39,13 +39,16 @@ public class ActionListener implements Listener, NamespacedKeys {
 		if (id == null)
 			return;
 		event.setCancelled(true);
+		AdventurerData data = ActionListener.this.adventureService.getAdventurerData(event.getPlayer().getUniqueId());
+		if (data == null || data.isFrozen()) {
+			event.getPlayer().sendMessage("Data not fully loaded! Please wait!");
+			return;
+		}
 		plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 
 			@Override
 			public void run() {
 				Traveler traveler = ActionListener.this.travelerService.loadTraveler(id);
-				AdventurerData data = ActionListener.this.adventureService
-						.getAdventurerData(event.getPlayer().getUniqueId());
 
 				String name = traveler.getLocationName();
 				if (data.getAdventurer().addTraveler(traveler))
