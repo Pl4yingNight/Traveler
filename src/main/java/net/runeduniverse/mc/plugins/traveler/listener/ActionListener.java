@@ -11,11 +11,13 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import net.runeduniverse.mc.plugins.traveler.TravelerMain;
 import net.runeduniverse.mc.plugins.traveler.data.AdventurerData;
 import net.runeduniverse.mc.plugins.traveler.data.NamespacedKeys;
+import net.runeduniverse.mc.plugins.traveler.data.items.Journal;
 import net.runeduniverse.mc.plugins.traveler.data.model.Traveler;
 import net.runeduniverse.mc.plugins.traveler.services.AdventureService;
 import net.runeduniverse.mc.plugins.traveler.services.TravelerService;
@@ -43,6 +45,11 @@ public class ActionListener implements Listener, NamespacedKeys {
 		if (data == null || data.isFrozen()) {
 			event.getPlayer().sendMessage("Data not fully loaded! Please wait!");
 			return;
+		}
+		ItemStack itemInHand = event.getPlayer().getInventory().getItemInMainHand();
+		if (Journal.isJournal(itemInHand)) {
+			Journal.updateTraveler(itemInHand, id);
+			event.getPlayer().sendMessage("Journal has been updated!");
 		}
 		plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 

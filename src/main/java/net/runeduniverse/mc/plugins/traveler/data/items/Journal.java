@@ -8,14 +8,15 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.runeduniverse.mc.plugins.snowflake.api.data.model.ItemData;
-import net.runeduniverse.mc.plugins.snowflake.api.data.model.Location;
 import net.runeduniverse.mc.plugins.traveler.TravelerMain;
 import net.runeduniverse.mc.plugins.traveler.data.NamespacedKeys;
 import net.runeduniverse.mc.plugins.traveler.data.model.Traveler;
-import net.runeduniverse.mc.plugins.traveler.services.TravelerService;
 
-public class Journal implements NamespacedKeys {
+public class Journal {
 
 	public static final ItemStack BLANK_JOURNAL;
 	public static final ShapedRecipe JOURNAL_RECIPE;
@@ -42,13 +43,10 @@ public class Journal implements NamespacedKeys {
 		 * 
 		 * // set the title and author of this book
 		 * bookMeta.setTitle("Interactive Book"); bookMeta.setAuthor("gigosaurus");
-		 * 
-		 * // update the ItemStack with this new meta
-		 * BLANK_JOURNAL.setItemMeta(bookMeta);
 		 */
 
 		// CONFIGURE JOURNAL_RECIPE
-		JOURNAL_RECIPE = new ShapedRecipe(JOURNAL_KEY, BLANK_JOURNAL);
+		JOURNAL_RECIPE = new ShapedRecipe(NamespacedKeys.JOURNAL_KEY, BLANK_JOURNAL);
 		JOURNAL_RECIPE.shape("-L-", "FBI", "-M-");
 		JOURNAL_RECIPE.setIngredient('B', Material.BOOK);
 		JOURNAL_RECIPE.setIngredient('F', Material.FEATHER);
@@ -63,63 +61,59 @@ public class Journal implements NamespacedKeys {
 		Journal.main = main;
 	}
 
-	public static Result setName(ItemStack journal, String name) {
+	public static void updateTraveler(ItemStack journal, long id) {
 		if (!isJournal(journal))
-			return Result.NOT_A_JOURNAL;
-		// TODO set NPCs name
-		return Result.SUCCESS;
+			return;
+		journal.getItemMeta().getPersistentDataContainer().set(NamespacedKeys.JOURNAL_TRAVELER_ID_KEY,
+				PersistentDataType.LONG, id);
+		Journal.update(journal);
 	}
 
-	public static Result setDestinationName(ItemStack journal, String name) {
+	public static void update(ItemStack journal) {
+		System.out.println(buildCover(null).toString());
 		if (!isJournal(journal))
-			return Result.NOT_A_JOURNAL;
+			return;
 		Traveler traveler = getTraveler(journal);
-		if (traveler == null)
-			return Result.NO_TRAVELER_SELECTED;
-		traveler.setName(name);
-		TravelerService.INSTANCE.saveTraveler(traveler);
-		return Result.SUCCESS;
+		BookMeta meta = (BookMeta) journal.getItemMeta();
+		meta.spigot().addPage(buildCover(traveler));
+		if (traveler != null)
+			meta.spigot().addPage(buildTravelerPage(traveler), buildDestinationPage(traveler));
+		BLANK_JOURNAL.setItemMeta(meta);
 	}
 
-	public static Result setLocation(ItemStack journal, Location location) {
-		if (!isJournal(journal))
-			return Result.NOT_A_JOURNAL;
-		Traveler traveler = getTraveler(journal);
-		if (traveler == null)
-			return Result.NO_TRAVELER_SELECTED;
-		traveler.setHome(location);
-		TravelerService.INSTANCE.saveTraveler(traveler);
-		return Result.SUCCESS;
-	}
-
-	public static Result setDestinationLocation(ItemStack journal, Location location) {
-		if (!isJournal(journal))
-			return Result.NOT_A_JOURNAL;
-		Traveler traveler = getTraveler(journal);
-		if (traveler == null)
-			return Result.NO_TRAVELER_SELECTED;
-		traveler.setLocation(location);
-		TravelerService.INSTANCE.saveTraveler(traveler);
-		return Result.SUCCESS;
-	}
-
-	private static boolean isJournal(ItemStack journal) {
+	public static boolean isJournal(ItemStack journal) {
+		if (journal == null)
+			return false;
+		// the here checked key gets added my Snowflake once the Recipe gets registered!
 		String key = journal.getItemMeta().getPersistentDataContainer().get(ItemData.ITEM_DATA_KEY,
 				PersistentDataType.STRING);
 		if (key == null)
 			return false;
-		return JOURNAL_KEY.toString().equals(key);
+		return NamespacedKeys.JOURNAL_KEY.toString().equals(key);
 	}
 
 	private static Traveler getTraveler(ItemStack journal) {
-		Long id = journal.getItemMeta().getPersistentDataContainer().get(JOURNAL_TRAVELER_ID_KEY,
+		Long id = journal.getItemMeta().getPersistentDataContainer().get(NamespacedKeys.JOURNAL_TRAVELER_ID_KEY,
 				PersistentDataType.LONG);
 		if (id == null)
 			return null;
-		return TravelerService.INSTANCE.loadTraveler(id);
+		return Journal.main.getTravelerService().loadTraveler(id);
 	}
 
-	public static enum Result {
-		SUCCESS, NOT_A_JOURNAL, NO_TRAVELER_SELECTED
+	private static BaseComponent[] buildCover(Traveler traveler) {
+		return new ComponentBuilder().append("\n").bold(true).append(" Traveler Journal").reset()
+				.append("\n Selected Traveler\n  [Traveler Name]")
+				.append("\n    Destination\n [Destination Name]\n [public/private]")
+				.append("\n      Owner\n [Player]\n\n").append(" [Traveler Wiki]")
+				.event(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Pl4yingNight/Traveler/wiki"))
+				.create();
+	}
+
+	private static BaseComponent[] buildTravelerPage(Traveler traveler) {
+		return new ComponentBuilder().create();
+	}
+
+	private static BaseComponent[] buildDestinationPage(Traveler traveler) {
+		return new ComponentBuilder().create();
 	}
 }

@@ -128,6 +128,8 @@ public class TravelerService implements IService {
 	}
 
 	public void updateFakeRecipe(ShapelessRecipe recipe) {
+		if (!this.main.isEnabled())
+			return;
 		Future<?> task = this.snowflake.getServer().getScheduler().callSyncMethod(this.main, new Callable<Void>() {
 
 			@Override
