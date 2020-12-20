@@ -21,6 +21,7 @@
 			<id>bungeecord-repo</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
+		<!-- Runed Universe Repo -->
 		<repository>
 			<id>runeduniverse-releases</id>
 			<url>http://runeduniverse.net:8081/repository/maven-releases/</url>
@@ -36,14 +37,18 @@
 		<dependency>
 			<groupId>net.runeduniverse.mc.plugins</groupId>
 			<artifactId>snowflake-api</artifactId>
-			<version>1.14-1.2.0</version>
+			<version>1.16-1.2.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- <dependency> <groupId>com.comphenix.protocol</groupId> <artifactId>ProtocolLib</artifactId> 
+			<version>4.6.0-SNAPSHOT</version> <scope>provided</scope> </dependency> -->
+		<!-- SOLUTION WHILE THE OFFICIAL ARCHIVE IS OFFLINE -->
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
-			<version>4.5.0</version>
-			<scope>provided</scope>
+			<version>4.6.0-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/ProtocolLib.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>net.runeduniverse.libs</groupId>
