@@ -74,7 +74,7 @@ public class TravelerService implements IService {
 
 	public Traveler createTraveler() {
 		Traveler traveler = new Traveler();
-		this.neo4jModule.getSession().save(traveler);
+		this.neo4jModule.save(traveler);
 		return traveler;
 	}
 
@@ -98,11 +98,11 @@ public class TravelerService implements IService {
 	}
 
 	public Traveler loadTraveler(Long id) {
-		return this.neo4jModule.getSession().load(Traveler.class, id, 4);
+		return this.neo4jModule.load(Traveler.class, id, 4);
 	}
 
 	public void saveTraveler(Traveler traveler) {
-		this.neo4jModule.getSession().save(traveler, 2);
+		this.neo4jModule.save(traveler, 2);
 	}
 
 	public void registerTraveler(Traveler traveler) {
@@ -113,34 +113,38 @@ public class TravelerService implements IService {
 
 	public void removeTraveler(Traveler traveler) {
 		this.keyedTraveler.remove(traveler.getKey());
-		this.neo4jModule.getSession().unload(traveler.getHome());
-		this.neo4jModule.getSession().unload(traveler.getLocation());
+		this.neo4jModule.unload(traveler.getHome());
+		this.neo4jModule.unload(traveler.getLocation());
 	}
 
 	public void deleteTraveler(Traveler traveler) {
 		NamespacedKey key = traveler.getKey();
 		this.keyedTraveler.remove(key);
 		this.snowflake.getRecipeService().removeRecipe(key);
-		this.neo4jModule.getSession().delete(traveler);
-		this.neo4jModule.getSession().delete(traveler.getHome());
-		this.neo4jModule.getSession().delete(traveler.getLocation());
+		this.neo4jModule.delete(traveler);
+		this.neo4jModule.delete(traveler.getHome());
+		this.neo4jModule.delete(traveler.getLocation());
 		this.adventureService.removeRecordsOf(traveler);
 	}
 
 	public void updateFakeRecipe(ShapelessRecipe recipe) {
 		if (!this.main.isEnabled())
 			return;
-		Future<?> task = this.snowflake.getServer().getScheduler().callSyncMethod(this.main, new Callable<Void>() {
+		try {
+			Future<?> task = this.snowflake.getServer().getScheduler().callSyncMethod(this.main, new Callable<Void>() {
 
-			@Override
-			public Void call() throws Exception {
-				TravelerService.this.recipeService.removeRecipe(recipe.getKey());
-				Bukkit.addRecipe(recipe);
-				return null;
-			}
-		});
-		while (task.isDone())
-			;
+				@Override
+				public Void call() throws Exception {
+					TravelerService.this.recipeService.removeRecipe(recipe.getKey());
+					Bukkit.addRecipe(recipe);
+					return null;
+				}
+			});
+			while (task.isDone())
+				;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void buildGui(AdventurerData data) {

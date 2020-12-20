@@ -3,10 +3,10 @@ package net.runeduniverse.mc.plugins.traveler.data;
 import org.redisson.api.RBucket;
 
 import lombok.Getter;
-import net.runeduniverse.libs.rogm.Session;
 import net.runeduniverse.mc.plugins.snowflake.api.data.IDataAccess;
 import net.runeduniverse.mc.plugins.snowflake.api.data.player.IPlayerData;
 import net.runeduniverse.mc.plugins.snowflake.api.services.IPlayerService;
+import net.runeduniverse.mc.plugins.snowflake.api.services.modules.INeo4jModule;
 import net.runeduniverse.mc.plugins.traveler.data.model.Adventurer;
 import net.runeduniverse.mc.plugins.traveler.data.model.Traveler;
 import net.runeduniverse.mc.plugins.traveler.services.AdventureService;
@@ -21,7 +21,7 @@ public class AdventurerData extends APlayerDataWrapper {
 	private Adventurer adventurer = null;
 	private IDataAccess dataAccess = null;
 	private IPlayerService service = null;
-	private Session session = null;
+	private INeo4jModule neo4jModule = null;
 
 	@Override
 	public void setDataAccess(IDataAccess dataAccess) {
@@ -33,14 +33,14 @@ public class AdventurerData extends APlayerDataWrapper {
 	public IPlayerData wrap(IPlayerData data) {
 		super.wrap(data);
 		this.service = data.getPlayerService();
-		this.session = this.service.getNeo4jModule().getSession();
+		this.neo4jModule = this.service.getNeo4jModule();
 		return this;
 	}
 
 	@Override
 	public void deepSave() {
 		super.deepSave();
-		this.session.save(this.adventurer);
+		this.neo4jModule.save(this.adventurer);
 	}
 
 	@Override

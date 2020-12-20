@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>net.runeduniverse.mc.plugins</groupId>
 			<artifactId>snowflake-api</artifactId>
-			<version>1.16-1.2.0</version>
+			<version>1.16-1.3.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- <dependency> <groupId>com.comphenix.protocol</groupId> <artifactId>ProtocolLib</artifactId> 
