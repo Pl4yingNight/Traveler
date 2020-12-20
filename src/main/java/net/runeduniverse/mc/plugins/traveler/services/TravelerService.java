@@ -14,13 +14,13 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runeduniverse.mc.plugins.snowflake.api.Snowflake;
 import net.runeduniverse.mc.plugins.snowflake.api.data.model.Location;
+import net.runeduniverse.mc.plugins.snowflake.api.services.IRecipeService;
 import net.runeduniverse.mc.plugins.snowflake.api.services.IService;
 import net.runeduniverse.mc.plugins.snowflake.api.services.IStorageService;
 import net.runeduniverse.mc.plugins.snowflake.api.services.modules.INeo4jModule;
@@ -33,7 +33,7 @@ public class TravelerService implements IService {
 
 	public static TravelerService INSTANCE;
 
-	private static final ItemStack TOKEN = new ItemStack(Material.FILLED_MAP);
+	public static final ItemStack TOKEN = new ItemStack(Material.FILLED_MAP);
 
 	static {
 		ItemMeta meta = TOKEN.getItemMeta();
@@ -48,6 +48,7 @@ public class TravelerService implements IService {
 	private TravelerMain main;
 
 	private IStorageService storageService;
+	private IRecipeService recipeService;
 	private AdventureService adventureService;
 
 	private INeo4jModule neo4jModule;
@@ -62,6 +63,7 @@ public class TravelerService implements IService {
 	@Override
 	public void prepare() {
 		this.storageService = this.snowflake.getStorageService();
+		this.recipeService = this.snowflake.getRecipeService();
 		this.adventureService = this.main.getAdventureService();
 		this.snowflake.getRecipeService().registerItemStack(NamespacedKeys.TOKEN_KEY, TOKEN);
 	}
@@ -104,29 +106,19 @@ public class TravelerService implements IService {
 	}
 
 	public void registerTraveler(Traveler traveler) {
-		NamespacedKey key = traveler.getNamespacedKey();
-		ShapelessRecipe recipe = genMapRecipe(key, traveler);
-		Future<?> task = this.snowflake.getServer().getScheduler().callSyncMethod(this.main, new Callable<Void>() {
-
-			@Override
-			public Void call() throws Exception {
-				Bukkit.addRecipe(recipe);
-				return null;
-			}
-		});
-		while (task.isDone())
-			;
+		NamespacedKey key = traveler.getKey();
+		this.updateFakeRecipe(traveler.getFakeRecipe());
 		this.keyedTraveler.put(key, traveler);
 	}
 
 	public void removeTraveler(Traveler traveler) {
-		this.keyedTraveler.remove(traveler.getNamespacedKey());
+		this.keyedTraveler.remove(traveler.getKey());
 		this.neo4jModule.getSession().unload(traveler.getHome());
 		this.neo4jModule.getSession().unload(traveler.getLocation());
 	}
 
 	public void deleteTraveler(Traveler traveler) {
-		NamespacedKey key = traveler.getNamespacedKey();
+		NamespacedKey key = traveler.getKey();
 		this.keyedTraveler.remove(key);
 		this.snowflake.getRecipeService().removeRecipe(key);
 		this.neo4jModule.getSession().delete(traveler);
@@ -135,11 +127,25 @@ public class TravelerService implements IService {
 		this.adventureService.removeRecordsOf(traveler);
 	}
 
+	public void updateFakeRecipe(ShapelessRecipe recipe) {
+		Future<?> task = this.snowflake.getServer().getScheduler().callSyncMethod(this.main, new Callable<Void>() {
+
+			@Override
+			public Void call() throws Exception {
+				TravelerService.this.recipeService.removeRecipe(recipe.getKey());
+				Bukkit.addRecipe(recipe);
+				return null;
+			}
+		});
+		while (task.isDone())
+			;
+	}
+
 	public void buildGui(AdventurerData data) {
 		List<NamespacedKey> fakeRecipes = new ArrayList<>();
 		for (Traveler t : data.getAdventurer().getTravelers()) {
 			if (this.keyedTraveler.containsValue(t))
-				fakeRecipes.add(t.getNamespacedKey());
+				fakeRecipes.add(t.getKey());
 		}
 		data.showAltRecipes(fakeRecipes);
 		data.getPlayer().discoverRecipes(fakeRecipes);
@@ -161,17 +167,6 @@ public class TravelerService implements IService {
 
 	public Info getInfo(Traveler traveler) {
 		return new Info(traveler);
-	}
-
-	@SuppressWarnings("deprecation")
-	private static ShapelessRecipe genMapRecipe(NamespacedKey key, Traveler traveler) {
-		ItemStack stack = new ItemStack(Material.FILLED_MAP);
-		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName(traveler.getLocationName());
-		stack.setItemMeta(meta);
-		ShapelessRecipe recipe = new ShapelessRecipe(key, stack);
-		recipe.addIngredient(new RecipeChoice.ExactChoice(TOKEN));
-		return recipe;
 	}
 
 	@RequiredArgsConstructor

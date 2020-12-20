@@ -1,10 +1,17 @@
 package net.runeduniverse.mc.plugins.traveler.data.model;
 
+import java.util.ArrayList;
+
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.WanderingTrader;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
+import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import lombok.Getter;
@@ -12,6 +19,7 @@ import lombok.Setter;
 import net.runeduniverse.libs.rogm.annotations.Direction;
 import net.runeduniverse.libs.rogm.annotations.NodeEntity;
 import net.runeduniverse.libs.rogm.annotations.PostLoad;
+import net.runeduniverse.libs.rogm.annotations.PostSave;
 import net.runeduniverse.libs.rogm.annotations.PreDelete;
 import net.runeduniverse.libs.rogm.annotations.Property;
 import net.runeduniverse.libs.rogm.annotations.Relationship;
@@ -43,7 +51,6 @@ public class Traveler extends ANodeEntity {
 	@Setter
 	@Relationship(label = LOCATION_RELATION, direction = Direction.OUTGOING)
 	private Location location;
-
 	@Getter
 	@Setter
 	@Relationship(label = HOME_RELATION, direction = Direction.OUTGOING)
@@ -52,20 +59,45 @@ public class Traveler extends ANodeEntity {
 	@Getter
 	@Transient
 	private LivingEntity entity = null;
+	@Getter
+	@Transient
+	private NamespacedKey key = null;
+	@Getter
+	@Transient
+	private ShapelessRecipe fakeRecipe = null;
+
+	@SuppressWarnings("deprecation")
+	private void init() {
+		this.key = new NamespacedKey("traveler", "loc-" + this.id);
+		this.updateFakeRecipe();
+	}
+
+	@SuppressWarnings("deprecation")
+	private void updateFakeRecipe() {
+		ItemStack stack = new ItemStack(Material.FILLED_MAP);
+		ItemMeta meta = stack.getItemMeta();
+		meta.setDisplayName(this.locationName);
+		stack.setItemMeta(meta);
+		ShapelessRecipe recipe = new ShapelessRecipe(key, stack);
+		recipe.addIngredient(new RecipeChoice.ExactChoice(TravelerService.TOKEN));
+		this.fakeRecipe = recipe;
+		TravelerService.INSTANCE.updateFakeRecipe(this.fakeRecipe);
+	}
 
 	@PostLoad
 	private void postLoad() {
 		TravelerService.INSTANCE.registerTraveler(this);
+		this.init();
+	}
+
+	@PostSave
+	private void postSave() {
+		this.init();
 	}
 
 	@PreDelete
 	private void perDelete() {
 		TravelerService.INSTANCE.removeTraveler(this);
-	}
-
-	@SuppressWarnings("deprecation")
-	public NamespacedKey getNamespacedKey() {
-		return new NamespacedKey("traveler", "loc-" + this.id);
 	}
 
 	public boolean canMove() {
@@ -84,6 +116,7 @@ public class Traveler extends ANodeEntity {
 		entity.getPersistentDataContainer().set(NamespacedKeys.TRAVELER_ID_KEY, PersistentDataType.LONG, this.id);
 		entity.setCanPickupItems(false);
 		entity.setRemoveWhenFarAway(false);
+		entity.setRecipes(new ArrayList<>());
 		this.entity = entity;
 	}
 
@@ -107,6 +140,7 @@ public class Traveler extends ANodeEntity {
 
 	public void setLocationName(String name) {
 		this.locationName = name.replace("§", "");
+		this.updateFakeRecipe();
 	}
 
 	public void setInvulnerable(boolean invulnerable) {
